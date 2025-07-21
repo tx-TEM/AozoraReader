@@ -2,8 +2,7 @@ import Foundation
 import Vapor
 import OpenAPIRuntime
 import OpenAPIVapor
-import Fluent
-import FluentSQLiteDriver
+import SQLite
 
 struct GreetingServiceAPIImpl: APIProtocol {
     func getGreeting(

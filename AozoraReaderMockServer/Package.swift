@@ -13,8 +13,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.7.0"),
         .package(url: "https://github.com/swift-server/swift-openapi-vapor", from: "1.0.0"),
         .package(url: "https://github.com/vapor/vapor", from: "4.89.0"),
-        .package(url: "https://github.com/vapor/fluent", from: "4.0.0"),
-        .package(url: "https://github.com/vapor/fluent-sqlite-driver", from: "4.0.0")
+        .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.4")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -25,12 +24,11 @@ let package = Package(
                      .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                      .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
                      .product(name: "Vapor", package: "vapor"),
-                     .product(name: "Fluent", package: "fluent"),
-                     .product(name: "FluentSQLiteDriver", package: "fluent-sqlite-driver")
+                     .product(name: "SQLite", package: "SQLite.swift")
                  ],
-                 plugins: [
-                     .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
-                 ]
+            plugins: [
+                .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
+            ]
         ),
     ]
 )

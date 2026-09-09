@@ -3,12 +3,91 @@ info:
   title: AozoraReaderAPI
   version: 1.0.0
 servers:
-  - url: https://example.com/api
-    description: Example service deployment.
+  - url: http://localhost:8080/api
+    description: ローカルで動かすモックサーバー。
 paths:
+  /books:
+    get:
+      operationId: getBooks
+      summary: 作品を一覧・検索する
+      parameters:
+        - name: q
+          in: query
+          required: false
+          description: 作品名・作品名読み・人物名の部分一致で絞り込む。
+          schema:
+            type: string
+        - name: personId
+          in: query
+          required: false
+          description: 指定した人物が関わる作品だけに絞り込む。
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          description: 取得件数。既定 50、最大 200。
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          required: false
+          description: 取得開始位置。既定 0。
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: 条件に一致した作品の一覧。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookPage'
+  /books/{bookId}:
+    get:
+      operationId: getBook
+      summary: 作品を 1 件取得する
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          description: 青空文庫の作品ID。
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 作品の詳細。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: 指定した作品IDが存在しない。
+  /persons/{personId}:
+    get:
+      operationId: getPerson
+      summary: 人物を 1 件取得する
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          description: 青空文庫の人物ID。
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 人物の詳細。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '404':
+          description: 指定した人物IDが存在しない。
   /greet:
     get:
       operationId: getGreeting
+      summary: 疎通確認用。
       parameters:
         - name: name
           required: false
@@ -32,3 +111,110 @@ components:
           type: string
       required:
         - message
+    BookPage:
+      type: object
+      description: ページングされた作品一覧。
+      properties:
+        total:
+          type: integer
+          description: 条件に一致した総件数。
+        limit:
+          type: integer
+        offset:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+      required:
+        - total
+        - limit
+        - offset
+        - items
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        titleKana:
+          type: string
+        subtitle:
+          type: string
+        firstAppearance:
+          type: string
+          description: 初出。
+        ndc:
+          type: string
+          description: 日本十進分類法による分類番号。
+        kanaType:
+          type: string
+          description: 文字遣い種別（新字新仮名 など）。
+        copyright:
+          type: boolean
+          description: 作品に著作権が残っているか。
+        releaseDate:
+          type: string
+        cardUrl:
+          type: string
+          description: 図書カードのURL。
+        textUrl:
+          type: string
+          description: テキストファイル（zip）のURL。空の作品もある。
+        htmlUrl:
+          type: string
+        contributors:
+          type: array
+          description: 著者・翻訳者など、この作品に関わった人物。
+          items:
+            $ref: '#/components/schemas/Contributor'
+      required:
+        - id
+        - title
+        - copyright
+        - contributors
+    Contributor:
+      type: object
+      properties:
+        personId:
+          type: integer
+        name:
+          type: string
+          description: 姓名を半角スペースで連結したもの。
+        role:
+          type: string
+          description: 役割フラグ（著者 / 翻訳者 / 校訂者 / 編者 / その他）。
+      required:
+        - personId
+        - name
+        - role
+    Person:
+      type: object
+      properties:
+        id:
+          type: integer
+        lastName:
+          type: string
+        firstName:
+          type: string
+        lastNameKana:
+          type: string
+        firstNameKana:
+          type: string
+        lastNameRoman:
+          type: string
+        firstNameRoman:
+          type: string
+        birthDate:
+          type: string
+        deathDate:
+          type: string
+        copyright:
+          type: boolean
+          description: 人物に著作権が残っているか。
+      required:
+        - id
+        - lastName
+        - firstName
+        - copyright

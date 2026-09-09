@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "AozoraReaderStubServer",
+    name: "AozoraReaderMockServer",
     platforms: [
         .macOS(.v10_15)
     ],
@@ -19,13 +19,16 @@ let package = Package(
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .executableTarget(
-            name: "AozoraReaderStubServer",
+            name: "AozoraReaderMockServer",
             dependencies: [
-                     .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
-                     .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
-                     .product(name: "Vapor", package: "vapor"),
-                     .product(name: "SQLite", package: "SQLite.swift")
-                 ],
+                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
+                .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
+                .product(name: "Vapor", package: "vapor"),
+                .product(name: "SQLite", package: "SQLite.swift")
+            ],
+            resources: [
+                .copy("SQLite/aozora_database.sqlite3")
+            ],
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
             ]

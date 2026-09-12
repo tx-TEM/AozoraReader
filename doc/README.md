@@ -19,6 +19,11 @@ API の仕様は [`Sources/openapi.yaml`](../AozoraReaderMockServer/Sources/open
 CSV (青空文庫)  ──build_db.py──▶  SQLite  ──BooksStorage──▶  Vapor + OpenAPI  ──▶  JSON
 ```
 
+## 進め方
+
+仕様を先に固めきらない。決まっていないことは各ドキュメントの「未定」に残し、
+開発しながら詰めていく。
+
 ## まだ決めていないこと
 
 本文（作品そのもの）の取得方法、リーダーの実装、画面構成は**未着手**。

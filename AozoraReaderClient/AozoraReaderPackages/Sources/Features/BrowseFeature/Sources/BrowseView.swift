@@ -27,7 +27,7 @@ public struct BrowseView: View {
             }
         }
         .task {
-            books = (try? await repository.books(q: nil, personId: nil, limit: 50, offset: 0))?.items ?? []
+            books = (try? await repository.books(title: nil, author: nil, personId: nil, limit: 50, offset: 0))?.items ?? []
         }
     }
 }

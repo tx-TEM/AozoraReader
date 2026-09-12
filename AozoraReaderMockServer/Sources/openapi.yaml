@@ -13,12 +13,18 @@ paths:
       description: |
         並び順はソート用読み（books.title_sort_kana）の昇順、同じ読みなら作品IDの昇順で固定。
         並び替えを指定する手段はない。
-        q と personId は併用でき、その場合は AND で絞り込む。
+        title / author / personId は併用でき、その場合は AND で絞り込む。
       parameters:
-        - name: q
+        - name: title
           in: query
           required: false
-          description: 作品名・作品名読み・人物名の部分一致で絞り込む。
+          description: 作品名・作品名読みの部分一致で絞り込む。
+          schema:
+            type: string
+        - name: author
+          in: query
+          required: false
+          description: 人物名の部分一致で絞り込む。
           schema:
             type: string
         - name: personId

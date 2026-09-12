@@ -14,7 +14,8 @@ struct AozoraServiceAPIHandler: APIProtocol {
         let offset = max(input.query.offset ?? 0, 0)
 
         let page = try await storage.books(
-            matching: input.query.q,
+            title: input.query.title,
+            author: input.query.author,
             personId: input.query.personId,
             limit: limit,
             offset: offset

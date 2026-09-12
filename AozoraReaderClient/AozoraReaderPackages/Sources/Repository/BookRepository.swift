@@ -8,8 +8,19 @@ public struct BookRepository: BookRepositoryProtocol {
         self.api = api
     }
 
-    public func books(q: String?, personId: Int?, limit: Int, offset: Int) async throws -> BookPageResponse {
-        try await GetBooksRequest(q: q, personId: personId, limit: limit, offset: offset)
-            .response(api: api)
+    public func books(
+        title: String?,
+        author: String?,
+        personId: Int?,
+        limit: Int,
+        offset: Int
+    ) async throws -> BookPageResponse {
+        try await GetBooksRequest(
+            title: title,
+            author: author,
+            personId: personId,
+            limit: limit,
+            offset: offset
+        ).response(api: api)
     }
 }

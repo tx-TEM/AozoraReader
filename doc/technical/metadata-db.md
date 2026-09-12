@@ -134,27 +134,42 @@ API を使う側が把握しておくべき、データの形と欠損。
 
 | メソッド | 対応するエンドポイント |
 |---|---|
-| `books(matching:personId:limit:offset:)` | `GET /books` |
+| `books(title:author:personId:limit:offset:)` | `GET /books` |
 | `book(id:)` | `GET /books/{bookId}` |
 | `person(id:)` | `GET /persons/{personId}` |
 
 ### 検索条件の組み立て
 
-`q` が渡されると、次の 3 つの OR になる。
+絞り込みは 3 つあり、渡されたものが AND で連結される。
+
+`title` は作品名と作品名読みの OR。
 
 ```sql
-b.title      LIKE ? ESCAPE '\'
-b.title_kana LIKE ? ESCAPE '\'
+(b.title LIKE ? ESCAPE '\' OR b.title_kana LIKE ? ESCAPE '\')
+```
+
+`author` は人物名。
+
+```sql
 EXISTS (SELECT 1 FROM book_persons bp JOIN persons p ON p.person_id = bp.person_id
         WHERE bp.book_id = b.book_id AND p.full_name LIKE ? ESCAPE '\')
 ```
+
+`personId` は `book_persons` の EXISTS で絞る。人物名の文字列ではなく ID 指定。
 
 `likePattern(_:)` が `\` `%` `_` をエスケープしてから `%...%` で囲むので、
 ユーザーが `%` を入れても全件一致にはならない（実測で 0 件）。
 
 **本文は検索対象ではない。** 作品名・作品名読み・人物名のみ。
 
-`personId` が渡されると `book_persons` の EXISTS で絞る。`q` と併用すると AND になる。
+実測値:
+
+| 条件 | 件数 |
+|---|---|
+| なし | 17,717 |
+| `title=走れ` | 1 |
+| `author=太宰` | 274 |
+| `title=手紙&author=堀` | 7 |
 
 ### 並び順
 

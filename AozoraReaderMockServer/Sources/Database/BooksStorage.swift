@@ -20,7 +20,8 @@ actor BooksStorage {
 
     /// 条件に一致する作品を、総件数つきで返す。
     func books(
-        matching keyword: String?,
+        title: String?,
+        author: String?,
         personId: Int?,
         limit: Int,
         offset: Int
@@ -28,18 +29,24 @@ actor BooksStorage {
         var conditions: [String] = []
         var bindings: [Binding?] = []
 
-        if let keyword, !keyword.isEmpty {
-            let pattern = likePattern(keyword)
+        if let title, !title.isEmpty {
+            let pattern = likePattern(title)
             conditions.append("""
                 (b.title LIKE ? ESCAPE '\\'
-                 OR b.title_kana LIKE ? ESCAPE '\\'
-                 OR EXISTS (
-                     SELECT 1 FROM book_persons bp
-                     JOIN persons p ON p.person_id = bp.person_id
-                     WHERE bp.book_id = b.book_id AND p.full_name LIKE ? ESCAPE '\\'
-                 ))
+                 OR b.title_kana LIKE ? ESCAPE '\\')
                 """)
-            bindings.append(contentsOf: [pattern, pattern, pattern])
+            bindings.append(contentsOf: [pattern, pattern])
+        }
+
+        if let author, !author.isEmpty {
+            conditions.append("""
+                EXISTS (
+                    SELECT 1 FROM book_persons bp
+                    JOIN persons p ON p.person_id = bp.person_id
+                    WHERE bp.book_id = b.book_id AND p.full_name LIKE ? ESCAPE '\\'
+                )
+                """)
+            bindings.append(likePattern(author))
         }
 
         if let personId {

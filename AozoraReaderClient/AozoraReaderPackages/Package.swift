@@ -7,6 +7,7 @@ import PackageDescription
 // Feature の追加はこの配列に1行足すだけ。依存は標準セットに統一する
 let featureNames: [String] = [
     "Browse",
+    "Detail",
 ]
 
 let featureProducts: [Product] = featureNames.map {

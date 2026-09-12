@@ -1,4 +1,5 @@
 import AozoraAPIResponse
+import Routing
 import SwiftUI
 
 /// 作品リストの 1 件。
@@ -8,6 +9,12 @@ struct BookRow: View {
     let book: BookSummaryResponse
 
     var body: some View {
+        NavigationLink(value: Destination.book(id: book.id)) {
+            content
+        }
+    }
+
+    private var content: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(book.title)
 

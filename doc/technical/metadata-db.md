@@ -181,8 +181,8 @@ EXISTS (SELECT 1 FROM book_persons bp JOIN persons p ON p.person_id = bp.person_
 
 ### contributors の取得
 
-作品ごとに人物を引くと N+1 になるため、`attachContributors(to:)` が
-対象作品の ID をまとめて `IN (...)` で 1 回引き、作品に詰め直している。
+作品ごとに人物を引くと N+1 になるため、`contributors(forBookIds:)` が
+対象作品の ID をまとめて `IN (...)` で 1 回引き、呼び出し側が詰め直している。
 
 並びは `ORDER BY bp.book_id, bp.role, p.person_id`。
 `role` は**文字列順**なので、意味的な順序にはならない（「翻訳者」が「著者」より先に来る）。
@@ -200,8 +200,22 @@ book_id 193「尼」の contributors
 副題のない作品のレスポンスに `subtitle` キーは存在しない。受け側は
 `openapi.yaml` の `required` 以外を省略可として扱う必要がある。
 
+### 一覧と詳細で引く列が違う
+
+一覧（`GET /books`）は `summaryColumns` の 3 列しか引かない。
+
+```sql
+b.book_id, b.title, b.subtitle
+```
+
+詳細（`GET /books/{bookId}`）は `bookColumns` で 12 列。一覧が実際に描いているのは
+タイトル・副題・著者名だけで、1 件あたり 528 バイトのうち使われるのが 126 バイト
+しかなかったため（[さがすタブ](../screen/browse.md#50-件ずつにした理由)）。
+
+`contributors` はどちらも同じように引く。
+
 ### API に出していない列
 
 `title_sort_kana`、`subtitle_kana`、`original_title`、`text_encoding`、`last_modified` は
-`BooksStorage` の `bookColumns` に入っておらず、API からは見えない。
+`bookColumns` にも入っておらず、API からは見えない。
 `text_encoding` は本文を取得する段階で必要になる。

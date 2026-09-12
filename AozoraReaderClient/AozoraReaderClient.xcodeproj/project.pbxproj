@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AA0000000000000000000004 /* BrowseFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000002 /* BrowseFeature */; };
+		AA0000000000000000000005 /* Repository in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000003 /* Repository */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		8D2F30D12E2DF0220003EC30 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8D076ED530559605007ED17A /* AozoraReaderPackages */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AozoraReaderPackages; sourceTree = "<group>"; };
 		8D2F30BF2E2DF0220003EC30 /* AozoraReaderClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AozoraReaderClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D2F30D02E2DF0220003EC30 /* AozoraReaderClientTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AozoraReaderClientTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D2F30DA2E2DF0230003EC30 /* AozoraReaderClientUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AozoraReaderClientUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -52,6 +58,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0000000000000000000004 /* BrowseFeature in Frameworks */,
+				AA0000000000000000000005 /* Repository in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +86,7 @@
 				8D2F30C12E2DF0220003EC30 /* AozoraReaderClient */,
 				8D2F30D32E2DF0220003EC30 /* AozoraReaderClientTests */,
 				8D2F30DD2E2DF0230003EC30 /* AozoraReaderClientUITests */,
+				8D076ED530559605007ED17A /* AozoraReaderPackages */,
 				8D2F30C02E2DF0220003EC30 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -112,6 +121,8 @@
 			);
 			name = AozoraReaderClient;
 			packageProductDependencies = (
+				AA0000000000000000000002 /* BrowseFeature */,
+				AA0000000000000000000003 /* Repository */,
 			);
 			productName = AozoraReaderClient;
 			productReference = 8D2F30BF2E2DF0220003EC30 /* AozoraReaderClient.app */;
@@ -195,6 +206,9 @@
 			);
 			mainGroup = 8D2F30B62E2DF0220003EC30;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AA0000000000000000000001 /* XCLocalSwiftPackageReference "AozoraReaderPackages" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8D2F30C02E2DF0220003EC30 /* Products */;
 			projectDirPath = "";
@@ -583,6 +597,24 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AA0000000000000000000001 /* XCLocalSwiftPackageReference "AozoraReaderPackages" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = AozoraReaderPackages;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AA0000000000000000000002 /* BrowseFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BrowseFeature;
+		};
+		AA0000000000000000000003 /* Repository */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Repository;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8D2F30B72E2DF0220003EC30 /* Project object */;
 }

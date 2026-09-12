@@ -20,6 +20,7 @@ public struct BrowseView: View {
             List(model.books) { book in
                 BookRow(book: book)
             }
+            .dismissesKeyboardOnInteraction()
         }
         .task { await model.task() }
     }

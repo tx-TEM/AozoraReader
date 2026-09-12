@@ -12,10 +12,10 @@ public final class BrowseViewModel {
     /// これを超えて結果が来ないときだけスピナーを出す。
     static let spinnerDelay = Duration.milliseconds(250)
 
-    public private(set) var books: [BookResponse] = []
-    public private(set) var isLoading = false
+    private(set) var books: [BookResponse] = []
+    private(set) var isLoading = false
 
-    public var keyword: String = "" {
+    var keyword: String = "" {
         didSet {
             guard oldValue != keyword else { return }
             scheduleSearch(after: Self.debounce)
@@ -23,7 +23,7 @@ public final class BrowseViewModel {
     }
 
     /// 変換が確定していない文字列を編集中かどうか。
-    public var isComposing: Bool = false {
+    var isComposing: Bool = false {
         didSet {
             // 変換が確定した瞬間は、デバウンスを待たずに送る。
             guard oldValue, !isComposing else { return }
@@ -38,7 +38,7 @@ public final class BrowseViewModel {
         self.repository = repository
     }
 
-    public func task() async {
+    func task() async {
         await search()
     }
 }

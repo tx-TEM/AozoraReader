@@ -162,7 +162,7 @@ components:
         contributors:
           type: array
           items:
-            $ref: '#/components/schemas/Contributor'
+            $ref: '#/components/schemas/ContributorSummary'
       required:
         - id
         - title
@@ -216,8 +216,9 @@ components:
         - title
         - copyright
         - contributors
-    Contributor:
+    ContributorSummary:
       type: object
+      description: 一覧に出す関係者。
       properties:
         personId:
           type: integer
@@ -227,6 +228,28 @@ components:
         role:
           type: string
           description: 役割フラグ（著者 / 翻訳者 / 校訂者 / 編者 / その他）。
+      required:
+        - personId
+        - name
+        - role
+    Contributor:
+      type: object
+      description: |
+        詳細に出す関係者。生没年は不明な場合にキーごと省かれる
+        （生年が 75 人、没年が 175 人）。
+      properties:
+        personId:
+          type: integer
+        name:
+          type: string
+          description: 姓名を半角スペースで連結したもの。
+        role:
+          type: string
+          description: 役割フラグ（著者 / 翻訳者 / 校訂者 / 編者 / その他）。
+        birthDate:
+          type: string
+        deathDate:
+          type: string
       required:
         - personId
         - name

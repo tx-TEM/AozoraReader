@@ -75,7 +75,7 @@ actor BooksStorage {
         )
 
         var books = rows.map(makeSummary(from:))
-        let contributors = try contributors(forBookIds: books.map(\.id))
+        let contributors = try contributorSummaries(forBookIds: books.map(\.id))
         for index in books.indices {
             books[index].contributors = contributors[books[index].id] ?? []
         }
@@ -159,17 +159,49 @@ actor BooksStorage {
         )
     }
 
-    /// 作品ごとに人物を引くと N+1 になるので、まとめて 1 回で引く。
+    /// 一覧に出す関係者。作品ごとに引くと N+1 になるので、まとめて 1 回で引く。
+    private func contributorSummaries(
+        forBookIds bookIds: [Int]
+    ) throws -> [Int: [Components.Schemas.ContributorSummary]] {
+        try groupedByBook(bookIds: bookIds, columns: "p.person_id, p.full_name, bp.role") { row in
+            Components.Schemas.ContributorSummary(
+                personId: int(row[1]),
+                name: string(row[2]),
+                role: string(row[3])
+            )
+        }
+    }
+
+    /// 詳細に出す関係者。生没年つき。
     private func contributors(
         forBookIds bookIds: [Int]
     ) throws -> [Int: [Components.Schemas.Contributor]] {
+        try groupedByBook(
+            bookIds: bookIds,
+            columns: "p.person_id, p.full_name, bp.role, p.birth_date, p.death_date"
+        ) { row in
+            Components.Schemas.Contributor(
+                personId: int(row[1]),
+                name: string(row[2]),
+                role: string(row[3]),
+                birthDate: optional(row[4]),
+                deathDate: optional(row[5])
+            )
+        }
+    }
+
+    private func groupedByBook<T>(
+        bookIds: [Int],
+        columns: String,
+        make: ([Binding?]) -> T
+    ) throws -> [Int: [T]] {
         guard !bookIds.isEmpty else { return [:] }
 
         let ids = bookIds.map { Int64($0) as Binding? }
         let placeholders = Array(repeating: "?", count: ids.count).joined(separator: ",")
         let rows = try db.prepare(
             """
-            SELECT bp.book_id, p.person_id, p.full_name, bp.role
+            SELECT bp.book_id, \(columns)
             FROM book_persons bp
             JOIN persons p ON p.person_id = bp.person_id
             WHERE bp.book_id IN (\(placeholders))
@@ -178,17 +210,10 @@ actor BooksStorage {
             ids
         )
 
-        var byBook: [Int: [Components.Schemas.Contributor]] = [:]
+        var byBook: [Int: [T]] = [:]
         for row in rows {
-            byBook[int(row[0]), default: []].append(
-                Components.Schemas.Contributor(
-                    personId: int(row[1]),
-                    name: string(row[2]),
-                    role: string(row[3])
-                )
-            )
+            byBook[int(row[0]), default: []].append(make(row))
         }
-
         return byBook
     }
 

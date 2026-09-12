@@ -37,7 +37,7 @@ struct GetBooksRequestTests {
         #expect(book.id == 1567)
         #expect(book.title == "走れメロス")
         #expect(book.subtitle == "副題")
-        #expect(book.contributors == [.init(personId: 35, name: "太宰 治", role: "著者")])
+        #expect(book.contributors == [ContributorSummaryResponse(personId: 35, name: "太宰 治", role: "著者")])
     }
 
     /// 副題を持たない作品はキーごと省かれる。

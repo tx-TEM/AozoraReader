@@ -18,7 +18,7 @@ let featureTargets: [Target] = featureNames.map {
         name: "\($0)Feature",
         dependencies: [
             .target(name: "Repository"),
-            .target(name: "Response"),
+            .target(name: "AozoraAPIResponse"),
             .target(name: "Routing"),
         ],
         path: "Sources/Features/\($0)Feature",
@@ -34,7 +34,7 @@ let package = Package(
     products: [
         .library(name: "AozoraAPI", targets: ["AozoraAPI"]),
         .library(name: "Repository", targets: ["Repository"]),
-        .library(name: "Response", targets: ["Response"]),
+        .library(name: "AozoraAPIResponse", targets: ["AozoraAPIResponse"]),
         .library(name: "Routing", targets: ["Routing"]),
     ] + featureProducts,
     dependencies: [
@@ -43,14 +43,14 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.2.0"),
     ],
     targets: [
-        .target(name: "Response"),
+        .target(name: "AozoraAPIResponse"),
         .target(name: "Routing"),
         .target(
             name: "AozoraAPI",
             dependencies: [
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
-                .target(name: "Response"),
+                .target(name: "AozoraAPIResponse"),
             ],
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator"),
@@ -60,10 +60,9 @@ let package = Package(
             name: "Repository",
             dependencies: [
                 .target(name: "AozoraAPI"),
-                .target(name: "Response"),
+                .target(name: "AozoraAPIResponse"),
             ]
         ),
-        .testTarget(name: "AozoraReaderPackagesTests"),
     ] + featureTargets,
     swiftLanguageModes: [.v6]
 )

@@ -41,6 +41,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.11.1"),
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.11.0"),
         .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.2.0"),
+        .package(url: "https://github.com/apple/swift-http-types", from: "1.8.0"),
     ],
     targets: [
         .target(name: "AozoraAPIResponse"),
@@ -59,6 +60,15 @@ let package = Package(
         .target(
             name: "Repository",
             dependencies: [
+                .target(name: "AozoraAPI"),
+                .target(name: "AozoraAPIResponse"),
+            ]
+        ),
+        .testTarget(
+            name: "AozoraAPITests",
+            dependencies: [
+                .product(name: "HTTPTypes", package: "swift-http-types"),
+                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .target(name: "AozoraAPI"),
                 .target(name: "AozoraAPIResponse"),
             ]

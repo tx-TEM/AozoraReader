@@ -10,18 +10,18 @@ public struct BrowseView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
+        List(model.books) { book in
+            BookRow(book: book)
+        }
+        .safeAreaInset(edge: .top) {
             SearchBar(
                 text: $model.keyword,
                 isComposing: $model.isComposing,
                 placeholder: "作品名で絞り込む"
             )
-
-            List(model.books) { book in
-                BookRow(book: book)
-            }
-            .dismissesKeyboardOnInteraction()
+            .background(.bar)
         }
+        .dismissesKeyboardOnInteraction()
         .task { await model.task() }
     }
 }

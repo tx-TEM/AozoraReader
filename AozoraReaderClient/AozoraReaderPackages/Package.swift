@@ -13,6 +13,18 @@ let featureProducts: [Product] = featureNames.map {
     .library(name: "\($0)Feature", targets: ["\($0)Feature"])
 }
 
+let featureTestTargets: [Target] = featureNames.map {
+    .testTarget(
+        name: "\($0)FeatureTests",
+        dependencies: [
+            .target(name: "AozoraAPIResponse"),
+            .target(name: "Repository"),
+            .target(name: "\($0)Feature"),
+        ],
+        path: "Tests/Features/\($0)FeatureTests"
+    )
+}
+
 let featureTargets: [Target] = featureNames.map {
     .target(
         name: "\($0)Feature",
@@ -76,6 +88,6 @@ let package = Package(
                 .target(name: "AozoraAPIResponse"),
             ]
         ),
-    ] + featureTargets,
+    ] + featureTargets + featureTestTargets,
     swiftLanguageModes: [.v6]
 )

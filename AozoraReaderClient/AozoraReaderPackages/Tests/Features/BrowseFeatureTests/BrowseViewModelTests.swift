@@ -7,7 +7,7 @@ import Testing
 @MainActor
 struct BrowseViewModelTests {
     private func waitPastDebounce() async throws {
-        try await Task.sleep(for: .milliseconds(500))
+        try await Task.sleep(for: BrowseViewModel.debounce + .milliseconds(200))
     }
 
     @Test("起動時は絞り込まずに取りに行く")
@@ -15,7 +15,7 @@ struct BrowseViewModelTests {
         let repository = BookRepositoryMock()
         let model = BrowseViewModel(repository: repository)
 
-        await model.load()
+        await model.task()
 
         #expect(repository.calls == [.init(title: nil, author: nil, offset: 0)])
     }
@@ -84,7 +84,7 @@ struct BrowseViewModelTests {
         let repository = BookRepositoryMock()
         repository.items = [.stub(id: 1, title: "走れメロス")]
         let model = BrowseViewModel(repository: repository)
-        await model.load()
+        await model.task()
 
         repository.items = [.stub(id: 2, title: "человек")]
         repository.delay = .milliseconds(300)

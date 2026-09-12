@@ -6,17 +6,15 @@ import Repository
 @MainActor
 @Observable
 public final class BrowseViewModel {
-    /// 一度に取得する件数。
     static let pageSize = 50
-    /// 入力が止まったと見なすまでの時間。
     static let debounce = Duration.milliseconds(300)
+
     /// これを超えて結果が来ないときだけスピナーを出す。
     static let spinnerDelay = Duration.milliseconds(250)
 
     public private(set) var books: [BookResponse] = []
     public private(set) var isLoading = false
 
-    /// 絞り込みのキーワード。
     public var keyword: String = "" {
         didSet {
             guard oldValue != keyword else { return }
@@ -40,10 +38,14 @@ public final class BrowseViewModel {
         self.repository = repository
     }
 
-    public func load() async {
+    public func task() async {
         await search()
     }
+}
 
+// MARK: - 検索処理
+
+extension BrowseViewModel {
     /// 取得中のものがあれば捨てて、取り直す。
     private func scheduleSearch(after delay: Duration) {
         searchTask?.cancel()
@@ -57,6 +59,23 @@ public final class BrowseViewModel {
     }
 
     private func search() async {
+        let page = await showingSpinner {
+            try? await repository.books(
+                title: keyword.isEmpty ? nil : keyword,
+                author: nil,
+                personId: nil,
+                limit: Self.pageSize,
+                offset: 0
+            )
+        }
+
+        // 捨てられたリクエストの結果は使わない。古い一覧を残す。
+        guard !Task.isCancelled, let page else { return }
+        books = page.items
+    }
+
+    /// `work` が ``spinnerDelay`` を超えたときだけスピナーを出す。
+    private func showingSpinner<T>(_ work: () async -> T) async -> T {
         let spinner = Task { [weak self] in
             try? await Task.sleep(for: Self.spinnerDelay)
             guard !Task.isCancelled else { return }
@@ -66,17 +85,6 @@ public final class BrowseViewModel {
             spinner.cancel()
             isLoading = false
         }
-
-        let page = try? await repository.books(
-            title: keyword.isEmpty ? nil : keyword,
-            author: nil,
-            personId: nil,
-            limit: Self.pageSize,
-            offset: 0
-        )
-
-        // 捨てられたリクエストの結果は使わない。古い一覧を残す。
-        guard !Task.isCancelled, let page else { return }
-        books = page.items
+        return await work()
     }
 }

@@ -21,6 +21,6 @@ public struct BrowseView: View {
                 BookRow(book: book)
             }
         }
-        .task { await model.load() }
+        .task { await model.task() }
     }
 }

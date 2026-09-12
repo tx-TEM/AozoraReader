@@ -23,4 +23,8 @@ public struct BookRepository: BookRepositoryProtocol {
             offset: offset
         ).response(api: api)
     }
+
+    public func book(id: Int) async throws -> BookResponse {
+        try await GetBookRequest(bookId: id).response(api: api)
+    }
 }

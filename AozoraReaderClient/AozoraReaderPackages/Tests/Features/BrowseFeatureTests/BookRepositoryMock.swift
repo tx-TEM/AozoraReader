@@ -17,6 +17,10 @@ final class BookRepositoryMock: BookRepositoryProtocol {
 
     nonisolated init() {}
 
+    func book(id: Int) async throws -> BookResponse {
+        BookResponse(id: id, title: "", copyright: false, contributors: [])
+    }
+
     func books(
         title: String?,
         author: String?,

@@ -29,3 +29,21 @@ public struct GetBooksRequest: AozoraAPIRequest {
         return BookPageResponse(response: try output.ok.body.json)
     }
 }
+
+/// 作品を 1 件取得する。
+///
+/// - Remark: GET /books/{bookId}
+public struct GetBookRequest: AozoraAPIRequest {
+    public typealias Response = BookResponse
+
+    private let bookId: Int
+
+    public init(bookId: Int) {
+        self.bookId = bookId
+    }
+
+    public func response(api: AozoraAPIClient) async throws -> BookResponse {
+        let output = try await api.client.getBook(path: .init(bookId: bookId))
+        return BookResponse(response: try output.ok.body.json)
+    }
+}

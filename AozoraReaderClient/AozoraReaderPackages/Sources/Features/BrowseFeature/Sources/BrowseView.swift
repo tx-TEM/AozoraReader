@@ -1,4 +1,5 @@
 import SwiftUI
+import UIComponents
 
 /// さがすタブ。作品の一覧を絞り込んで探す。
 public struct BrowseView: View {
@@ -9,8 +10,16 @@ public struct BrowseView: View {
     }
 
     public var body: some View {
-        List(model.books) { book in
-            BookRow(book: book)
+        VStack(spacing: 0) {
+            SearchBar(
+                text: $model.keyword,
+                isComposing: $model.isComposing,
+                placeholder: "作品名で絞り込む"
+            )
+
+            List(model.books) { book in
+                BookRow(book: book)
+            }
         }
         .task { await model.load() }
     }

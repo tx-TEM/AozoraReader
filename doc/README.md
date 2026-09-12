@@ -13,6 +13,8 @@
 API の仕様は [`Sources/openapi.yaml`](../AozoraReaderMockServer/Sources/openapi.yaml) が正。
 ここには書き写さない。
 
+画面は [タブ画面](screen/tab.md) から。
+
 ```
 CSV (青空文庫)  ──build_db.py──▶  SQLite  ──BooksStorage──▶  Vapor + OpenAPI  ──▶  JSON
 ```

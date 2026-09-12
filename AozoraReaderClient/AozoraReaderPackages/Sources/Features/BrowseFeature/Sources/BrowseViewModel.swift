@@ -2,6 +2,7 @@ import AozoraAPIResponse
 import Foundation
 import Observation
 import Repository
+import Utils
 
 @MainActor
 @Observable
@@ -53,7 +54,7 @@ extension BrowseViewModel {
             if delay > .zero {
                 try? await Task.sleep(for: delay)
             }
-            guard !Task.isCancelled else { return }
+            guard Task.isNotCancelled else { return }
             await self?.search()
         }
     }
@@ -70,7 +71,7 @@ extension BrowseViewModel {
         }
 
         // 捨てられたリクエストの結果は使わない。古い一覧を残す。
-        guard !Task.isCancelled, let page else { return }
+        guard Task.isNotCancelled, let page else { return }
         books = page.items
     }
 
@@ -78,7 +79,7 @@ extension BrowseViewModel {
     private func showingSpinner<T>(_ work: () async -> T) async -> T {
         let spinner = Task { [weak self] in
             try? await Task.sleep(for: Self.spinnerDelay)
-            guard !Task.isCancelled else { return }
+            guard Task.isNotCancelled else { return }
             self?.isLoading = true
         }
         defer {

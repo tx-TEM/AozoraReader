@@ -33,6 +33,7 @@ let featureTargets: [Target] = featureNames.map {
             .target(name: "Repository"),
             .target(name: "Routing"),
             .target(name: "UIComponents"),
+            .target(name: "Utils"),
         ],
         path: "Sources/Features/\($0)Feature",
         sources: ["Sources"]
@@ -50,6 +51,7 @@ let package = Package(
         .library(name: "Repository", targets: ["Repository"]),
         .library(name: "Routing", targets: ["Routing"]),
         .library(name: "UIComponents", targets: ["UIComponents"]),
+        .library(name: "Utils", targets: ["Utils"]),
     ] + featureProducts,
     dependencies: [
         .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.11.1"),
@@ -61,6 +63,7 @@ let package = Package(
         .target(name: "AozoraAPIResponse"),
         .target(name: "Routing"),
         .target(name: "UIComponents"),
+        .target(name: "Utils"),
         .target(
             name: "AozoraAPI",
             dependencies: [

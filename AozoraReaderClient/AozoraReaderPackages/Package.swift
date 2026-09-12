@@ -58,6 +58,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.11.0"),
         .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.2.0"),
         .package(url: "https://github.com/apple/swift-http-types", from: "1.8.0"),
+        .package(url: "https://github.com/apple/swift-log", from: "1.6.0"),
     ],
     targets: [
         .target(name: "AozoraAPIResponse"),
@@ -69,6 +70,8 @@ let package = Package(
             dependencies: [
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
+                .product(name: "HTTPTypes", package: "swift-http-types"),
+                .product(name: "Logging", package: "swift-log"),
                 .target(name: "AozoraAPIResponse"),
             ],
             plugins: [

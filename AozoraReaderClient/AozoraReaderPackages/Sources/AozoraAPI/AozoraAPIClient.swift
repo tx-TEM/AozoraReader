@@ -8,6 +8,15 @@ public struct AozoraAPIClient: Sendable {
 
     /// 接続先は openapi.yaml の `servers:` から生成されたものを使う。
     public init(transport: any ClientTransport = URLSessionTransport()) {
-        client = Client(serverURL: try! Servers.Server1.url(), transport: transport)
+        var middlewares: [any ClientMiddleware] = []
+        #if DEBUG
+        middlewares.append(LoggingMiddleware(bodyLoggingPolicy: .upTo(maxBytes: 4096)))
+        #endif
+
+        client = Client(
+            serverURL: try! Servers.Server1.url(),
+            transport: transport,
+            middlewares: middlewares
+        )
     }
 }

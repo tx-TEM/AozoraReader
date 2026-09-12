@@ -6,9 +6,9 @@ public struct BookPageResponse: Sendable, Hashable {
     public let limit: Int
     /// 実際に適用された取得開始位置。リクエスト値を丸めた後の値。
     public let offset: Int
-    public let items: [BookResponse]
+    public let items: [BookSummaryResponse]
 
-    public init(total: Int, limit: Int, offset: Int, items: [BookResponse]) {
+    public init(total: Int, limit: Int, offset: Int, items: [BookSummaryResponse]) {
         self.total = total
         self.limit = limit
         self.offset = offset

@@ -25,7 +25,7 @@ actor BooksStorage {
         personId: Int?,
         limit: Int,
         offset: Int
-    ) throws -> (total: Int, items: [Components.Schemas.Book]) {
+    ) throws -> (total: Int, items: [Components.Schemas.BookSummary]) {
         var conditions: [String] = []
         var bindings: [Binding?] = []
 
@@ -66,7 +66,7 @@ actor BooksStorage {
 
         let rows = try db.prepare(
             """
-            SELECT \(Self.bookColumns) FROM books b
+            SELECT \(Self.summaryColumns) FROM books b
             \(whereClause)
             ORDER BY b.title_sort_kana, b.book_id
             LIMIT ? OFFSET ?
@@ -74,8 +74,11 @@ actor BooksStorage {
             bindings + [Int64(limit), Int64(offset)]
         )
 
-        var books = rows.map(makeBook(from:))
-        try attachContributors(to: &books)
+        var books = rows.map(makeSummary(from:))
+        let contributors = try contributors(forBookIds: books.map(\.id))
+        for index in books.indices {
+            books[index].contributors = contributors[books[index].id] ?? []
+        }
         return (total32, books)
     }
 
@@ -87,9 +90,9 @@ actor BooksStorage {
         ).makeIterator().next()
 
         guard let row else { return nil }
-        var books = [makeBook(from: row)]
-        try attachContributors(to: &books)
-        return books[0]
+        var book = makeBook(from: row)
+        book.contributors = try contributors(forBookIds: [book.id])[book.id] ?? []
+        return book
     }
 
     // MARK: - 人物
@@ -122,10 +125,21 @@ actor BooksStorage {
 
     // MARK: - 組み立て
 
+    private static let summaryColumns = "b.book_id, b.title, b.subtitle"
+
     private static let bookColumns = """
         b.book_id, b.title, b.title_kana, b.subtitle, b.first_appearance, b.ndc,
         b.kana_type, b.copyright, b.release_date, b.card_url, b.text_url, b.html_url
         """
+
+    private func makeSummary(from row: [Binding?]) -> Components.Schemas.BookSummary {
+        Components.Schemas.BookSummary(
+            id: int(row[0]),
+            title: string(row[1]),
+            subtitle: optional(row[2]),
+            contributors: []
+        )
+    }
 
     private func makeBook(from row: [Binding?]) -> Components.Schemas.Book {
         Components.Schemas.Book(
@@ -145,11 +159,13 @@ actor BooksStorage {
         )
     }
 
-    /// 作品ごとに人物を引くと N+1 になるので、まとめて 1 回で引いて詰め直す。
-    private func attachContributors(to books: inout [Components.Schemas.Book]) throws {
-        guard !books.isEmpty else { return }
+    /// 作品ごとに人物を引くと N+1 になるので、まとめて 1 回で引く。
+    private func contributors(
+        forBookIds bookIds: [Int]
+    ) throws -> [Int: [Components.Schemas.Contributor]] {
+        guard !bookIds.isEmpty else { return [:] }
 
-        let ids = books.map { Int64($0.id) as Binding? }
+        let ids = bookIds.map { Int64($0) as Binding? }
         let placeholders = Array(repeating: "?", count: ids.count).joined(separator: ",")
         let rows = try db.prepare(
             """
@@ -173,9 +189,7 @@ actor BooksStorage {
             )
         }
 
-        for index in books.indices {
-            books[index].contributors = byBook[books[index].id] ?? []
-        }
+        return byBook
     }
 
     // MARK: - 値の取り出し

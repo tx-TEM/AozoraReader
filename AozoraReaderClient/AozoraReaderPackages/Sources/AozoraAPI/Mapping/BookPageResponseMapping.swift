@@ -6,7 +6,7 @@ internal extension BookPageResponse {
             total: response.total,
             limit: response.limit,
             offset: response.offset,
-            items: response.items.map(BookResponse.init(response:))
+            items: response.items.map(BookSummaryResponse.init(response:))
         )
     }
 }

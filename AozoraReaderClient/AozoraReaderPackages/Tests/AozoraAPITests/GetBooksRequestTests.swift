@@ -20,16 +20,7 @@ struct GetBooksRequestTests {
             {
               "id": 1567,
               "title": "走れメロス",
-              "titleKana": "はしれめろす",
               "subtitle": "副題",
-              "firstAppearance": "「新潮」1940（昭和15）年5月号",
-              "ndc": "NDC 913",
-              "kanaType": "新字新仮名",
-              "copyright": false,
-              "releaseDate": "2000-12-04",
-              "cardUrl": "https://www.aozora.gr.jp/cards/000035/card1567.html",
-              "textUrl": "https://www.aozora.gr.jp/cards/000035/files/1567_ruby_4948.zip",
-              "htmlUrl": "https://www.aozora.gr.jp/cards/000035/files/1567_14913.html",
               "contributors": [
                 { "personId": 35, "name": "太宰 治", "role": "著者" }
               ]
@@ -45,20 +36,11 @@ struct GetBooksRequestTests {
         let book = try #require(page.items.first)
         #expect(book.id == 1567)
         #expect(book.title == "走れメロス")
-        #expect(book.titleKana == "はしれめろす")
         #expect(book.subtitle == "副題")
-        #expect(book.firstAppearance == "「新潮」1940（昭和15）年5月号")
-        #expect(book.ndc == "NDC 913")
-        #expect(book.kanaType == "新字新仮名")
-        #expect(book.copyright == false)
-        #expect(book.releaseDate == "2000-12-04")
-        #expect(book.cardUrl == "https://www.aozora.gr.jp/cards/000035/card1567.html")
-        #expect(book.textUrl == "https://www.aozora.gr.jp/cards/000035/files/1567_ruby_4948.zip")
-        #expect(book.htmlUrl == "https://www.aozora.gr.jp/cards/000035/files/1567_14913.html")
         #expect(book.contributors == [.init(personId: 35, name: "太宰 治", role: "著者")])
     }
 
-    /// 値を持たない項目はキーごと省かれる。副題のない作品がこれにあたる。
+    /// 副題を持たない作品はキーごと省かれる。
     @Test("required 以外のキーが無くても通る")
     func acceptsOmittedKeys() async throws {
         let page = try await books("""
@@ -68,7 +50,6 @@ struct GetBooksRequestTests {
             {
               "id": 798,
               "title": "手紙",
-              "copyright": false,
               "contributors": [
                 { "personId": 148, "name": "夏目 漱石", "role": "著者" }
               ]
@@ -77,16 +58,7 @@ struct GetBooksRequestTests {
         }
         """)
 
-        let book = try #require(page.items.first)
-        #expect(book.titleKana == nil)
-        #expect(book.subtitle == nil)
-        #expect(book.firstAppearance == nil)
-        #expect(book.ndc == nil)
-        #expect(book.kanaType == nil)
-        #expect(book.releaseDate == nil)
-        #expect(book.cardUrl == nil)
-        #expect(book.textUrl == nil)
-        #expect(book.htmlUrl == nil)
+        #expect(try #require(page.items.first).subtitle == nil)
     }
 
     /// 仕様上は空文字も許される。キーが無い場合とは区別される。
@@ -96,19 +68,12 @@ struct GetBooksRequestTests {
         {
           "total": 1, "limit": 50, "offset": 0,
           "items": [
-            {
-              "id": 798, "title": "手紙", "copyright": false,
-              "subtitle": "", "ndc": "", "textUrl": "",
-              "contributors": []
-            }
+            { "id": 798, "title": "手紙", "subtitle": "", "contributors": [] }
           ]
         }
         """)
 
-        let book = try #require(page.items.first)
-        #expect(book.subtitle == "")
-        #expect(book.ndc == "")
-        #expect(book.textUrl == "")
+        #expect(try #require(page.items.first).subtitle == "")
     }
 
     @Test("contributors が空でも通る")
@@ -117,7 +82,7 @@ struct GetBooksRequestTests {
         {
           "total": 1, "limit": 50, "offset": 0,
           "items": [
-            { "id": 798, "title": "手紙", "copyright": false, "contributors": [] }
+            { "id": 798, "title": "手紙", "contributors": [] }
           ]
         }
         """)
@@ -133,7 +98,7 @@ struct GetBooksRequestTests {
           "total": 1, "limit": 50, "offset": 0,
           "items": [
             {
-              "id": 193, "title": "尼", "copyright": false,
+              "id": 193, "title": "尼",
               "contributors": [
                 { "personId": 129, "name": "森 鴎外", "role": "翻訳者" },
                 { "personId": 315, "name": "森 林太郎", "role": "翻訳者" },

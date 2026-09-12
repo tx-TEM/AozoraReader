@@ -13,7 +13,7 @@ public final class BrowseViewModel {
     /// これを超えて結果が来ないときだけスピナーを出す。
     static let spinnerDelay = Duration.milliseconds(250)
 
-    private(set) var books: [BookResponse] = []
+    private(set) var books: [BookSummaryResponse] = []
     private(set) var isLoading = false
 
     var keyword: String = "" {

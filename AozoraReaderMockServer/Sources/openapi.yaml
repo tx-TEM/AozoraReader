@@ -141,12 +141,32 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/Book'
+            $ref: '#/components/schemas/BookSummary'
       required:
         - total
         - limit
         - offset
         - items
+    BookSummary:
+      type: object
+      description: |
+        一覧に出す項目だけを持つ作品。詳細は GET /books/{bookId} で取る。
+        1 件あたり約 530 バイトのうち、一覧が使うのは 1 割ほどしかないため分けている。
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        subtitle:
+          type: string
+        contributors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contributor'
+      required:
+        - id
+        - title
+        - contributors
     Book:
       type: object
       description: |

@@ -5,7 +5,7 @@ import SwiftUI
 ///
 /// 副題を持たない作品では、副題を行から省く。
 struct BookRow: View {
-    let book: BookResponse
+    let book: BookSummaryResponse
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {

@@ -11,7 +11,7 @@ final class BookRepositoryMock: BookRepositoryProtocol {
     }
 
     private(set) var calls: [Call] = []
-    var items: [BookResponse] = []
+    var items: [BookSummaryResponse] = []
     /// 応答を遅らせる。取得中のふるまいを見るために使う。
     var delay: Duration = .zero
 
@@ -32,8 +32,8 @@ final class BookRepositoryMock: BookRepositoryProtocol {
     }
 }
 
-extension BookResponse {
-    static func stub(id: Int, title: String) -> BookResponse {
-        BookResponse(id: id, title: title, copyright: false, contributors: [])
+extension BookSummaryResponse {
+    static func stub(id: Int, title: String) -> BookSummaryResponse {
+        BookSummaryResponse(id: id, title: title, contributors: [])
     }
 }

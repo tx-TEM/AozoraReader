@@ -10,6 +10,10 @@ paths:
     get:
       operationId: getBooks
       summary: 作品を一覧・検索する
+      description: |
+        並び順はソート用読み（books.title_sort_kana）の昇順、同じ読みなら作品IDの昇順で固定。
+        並び替えを指定する手段はない。
+        q と personId は併用でき、その場合は AND で絞り込む。
       parameters:
         - name: q
           in: query
@@ -26,14 +30,18 @@ paths:
         - name: limit
           in: query
           required: false
-          description: 取得件数。既定 50、最大 200。
+          description: |
+            取得件数。既定 50。
+            範囲外の値はエラーにせず 1〜200 に丸める（0 以下は 1、201 以上は 200）。
           schema:
             type: integer
             default: 50
         - name: offset
           in: query
           required: false
-          description: 取得開始位置。既定 0。
+          description: |
+            取得開始位置。既定 0。
+            負数はエラーにせず 0 に丸める。
           schema:
             type: integer
             default: 0
@@ -117,11 +125,13 @@ components:
       properties:
         total:
           type: integer
-          description: 条件に一致した総件数。
+          description: limit と offset を無視した、条件に一致した総件数。
         limit:
           type: integer
+          description: 実際に適用された取得件数。リクエスト値を丸めた後の値が入る。
         offset:
           type: integer
+          description: 実際に適用された取得開始位置。リクエスト値を丸めた後の値が入る。
         items:
           type: array
           items:
@@ -133,6 +143,9 @@ components:
         - items
     Book:
       type: object
+      description: |
+        required 以外のフィールドは、値を持たない作品ではキーごと省かれる
+        （DB 上は空文字で、レスポンス生成時に null へ潰して省略している）。
       properties:
         id:
           type: integer
@@ -166,7 +179,10 @@ components:
           type: string
         contributors:
           type: array
-          description: 著者・翻訳者など、この作品に関わった人物。
+          description: |
+            著者・翻訳者など、この作品に関わった人物。
+            並びは role の文字列順・人物IDの昇順で、役割の重要度順ではない
+            （「翻訳者」が「著者」より先に来る）。
           items:
             $ref: '#/components/schemas/Contributor'
       required:
@@ -191,6 +207,8 @@ components:
         - role
     Person:
       type: object
+      description: |
+        required 以外のフィールドは、値を持たない人物ではキーごと省かれる。
       properties:
         id:
           type: integer

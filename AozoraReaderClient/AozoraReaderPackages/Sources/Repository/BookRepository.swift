@@ -1,16 +1,11 @@
 import AozoraAPI
 import AozoraAPIResponse
-import Foundation
 
 public struct BookRepository: BookRepositoryProtocol {
     private let api: AozoraAPIClient
 
-    public init(api: AozoraAPIClient) {
+    public init(api: AozoraAPIClient = AozoraAPIClient()) {
         self.api = api
-    }
-
-    public init(serverURL: URL) {
-        self.init(api: AozoraAPIClient(serverURL: serverURL))
     }
 
     public func books(q: String?, personId: Int?, limit: Int, offset: Int) async throws -> BookPageResponse {

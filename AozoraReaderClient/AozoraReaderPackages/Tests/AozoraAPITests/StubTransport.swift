@@ -21,9 +21,6 @@ struct StubTransport: ClientTransport {
 
 extension AozoraAPIClient {
     static func stub(returning json: String) -> AozoraAPIClient {
-        AozoraAPIClient(
-            serverURL: URL(string: "http://localhost:8080/api")!,
-            transport: StubTransport(json: json)
-        )
+        AozoraAPIClient(transport: StubTransport(json: json))
     }
 }

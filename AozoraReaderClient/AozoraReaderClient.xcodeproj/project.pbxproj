@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		AA0000000000000000000004 /* BrowseFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000002 /* BrowseFeature */; };
-		AA0000000000000000000005 /* Repository in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000003 /* Repository */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,7 +58,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0000000000000000000004 /* BrowseFeature in Frameworks */,
-				AA0000000000000000000005 /* Repository in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,7 +120,6 @@
 			name = AozoraReaderClient;
 			packageProductDependencies = (
 				AA0000000000000000000002 /* BrowseFeature */,
-				AA0000000000000000000003 /* Repository */,
 			);
 			productName = AozoraReaderClient;
 			productReference = 8D2F30BF2E2DF0220003EC30 /* AozoraReaderClient.app */;
@@ -609,10 +606,6 @@
 		AA0000000000000000000002 /* BrowseFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = BrowseFeature;
-		};
-		AA0000000000000000000003 /* Repository */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Repository;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

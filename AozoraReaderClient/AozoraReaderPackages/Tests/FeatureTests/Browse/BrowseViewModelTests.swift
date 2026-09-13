@@ -230,3 +230,17 @@ struct BrowseFailureTests {
         #expect(model.books.count == 10)
     }
 }
+
+extension BrowseViewModelTests {
+    @Test("検索キーをたたいたらデバウンスを待たずに送る")
+    func submitsWithoutWaiting() async throws {
+        let repository = BookRepositoryMock()
+        let model = BrowseViewModel(repository: repository)
+
+        model.keyword = "走れ"
+        model.submit()
+        try await Task.sleep(for: .milliseconds(50))
+
+        #expect(repository.calls == [.init(title: "走れ", author: nil, offset: 0)])
+    }
+}

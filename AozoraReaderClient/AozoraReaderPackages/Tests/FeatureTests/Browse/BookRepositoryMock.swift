@@ -15,6 +15,10 @@ final class BookRepositoryMock: BookRepositoryProtocol {
     var items: [BookSummaryResponse] = []
     /// 応答を遅らせる。取得中のふるまいを見るために使う。
     var delay: Duration = .zero
+    /// 入れておくと、取得のたびに投げる。
+    var failure: (any Error)?
+
+    struct Failure: Error {}
 
     nonisolated init() {}
 
@@ -32,6 +36,9 @@ final class BookRepositoryMock: BookRepositoryProtocol {
         calls.append(Call(title: title, author: author, offset: offset))
         if delay > .zero {
             try await Task.sleep(for: delay)
+        }
+        if let failure {
+            throw failure
         }
         let page = Array(items.dropFirst(offset).prefix(limit))
         return BookPageResponse(total: items.count, limit: limit, offset: offset, items: page)

@@ -198,3 +198,35 @@ struct BrowseFilterTargetTests {
         #expect(repository.calls.map(\.offset) == [0, 50, 0])
     }
 }
+
+// MARK: - 取得の失敗
+
+@Suite("さがすタブの取得失敗")
+@MainActor
+struct BrowseFailureTests {
+    @Test("取得に失敗したらエラーになる")
+    func failsOnError() async {
+        let repository = BookRepositoryMock()
+        repository.failure = BookRepositoryMock.Failure()
+        let model = BrowseViewModel(repository: repository)
+
+        await model.task()
+
+        #expect(model.hasFailed)
+    }
+
+    @Test("もう一度取りに行けば直る")
+    func recoversOnRetry() async {
+        let repository = BookRepositoryMock()
+        repository.items = (1...10).map { .stub(id: $0, title: "\($0)") }
+        repository.failure = BookRepositoryMock.Failure()
+        let model = BrowseViewModel(repository: repository)
+        await model.task()
+
+        repository.failure = nil
+        await model.task()
+
+        #expect(!model.hasFailed)
+        #expect(model.books.count == 10)
+    }
+}

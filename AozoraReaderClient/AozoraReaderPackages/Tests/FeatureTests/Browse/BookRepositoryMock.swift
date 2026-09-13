@@ -11,6 +11,7 @@ final class BookRepositoryMock: BookRepositoryProtocol {
     }
 
     private(set) var calls: [Call] = []
+    /// 絞り込みに一致する全件。`offset` の位置から `limit` 件を切り出して返す。
     var items: [BookSummaryResponse] = []
     /// 応答を遅らせる。取得中のふるまいを見るために使う。
     var delay: Duration = .zero
@@ -32,7 +33,8 @@ final class BookRepositoryMock: BookRepositoryProtocol {
         if delay > .zero {
             try await Task.sleep(for: delay)
         }
-        return BookPageResponse(total: items.count, limit: limit, offset: offset, items: items)
+        let page = Array(items.dropFirst(offset).prefix(limit))
+        return BookPageResponse(total: items.count, limit: limit, offset: offset, items: page)
     }
 }
 

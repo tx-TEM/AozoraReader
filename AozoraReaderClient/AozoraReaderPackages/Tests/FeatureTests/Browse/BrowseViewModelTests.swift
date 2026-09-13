@@ -97,3 +97,71 @@ struct BrowseViewModelTests {
         #expect(model.books.map(\.id) == [2])
     }
 }
+
+// MARK: - ページング
+
+@Suite("さがすタブのページング")
+@MainActor
+struct BrowsePagingTests {
+    private func loaded(count: Int) async -> (BrowseViewModel, BookRepositoryMock) {
+        let repository = BookRepositoryMock()
+        repository.items = (1...count).map { .stub(id: $0, title: "\($0)") }
+        let model = BrowseViewModel(repository: repository)
+        await model.task()
+        return (model, repository)
+    }
+
+    @Test("末尾から20件のところが出たら次の50件を足す")
+    func loadsNextPage() async {
+        let (model, repository) = await loaded(count: 120)
+        #expect(model.books.count == BrowseViewModel.pageSize)
+
+        await model.rowAppeared(model.books[30])
+
+        #expect(model.books.count == 100)
+        #expect(repository.calls.map(\.offset) == [0, 50])
+    }
+
+    @Test("末尾から遠い行では取りに行かない")
+    func ignoresEarlyRow() async {
+        let (model, repository) = await loaded(count: 120)
+
+        await model.rowAppeared(model.books[29])
+
+        #expect(repository.calls.map(\.offset) == [0])
+    }
+
+    @Test("総件数に達したら取りに行かない")
+    func stopsAtTotal() async {
+        let (model, repository) = await loaded(count: 30)
+
+        await model.rowAppeared(model.books[29])
+
+        #expect(repository.calls.map(\.offset) == [0])
+    }
+
+    @Test("取得中は次の取得を始めない")
+    func ignoresWhileLoading() async {
+        let (model, repository) = await loaded(count: 120)
+        repository.delay = .milliseconds(100)
+
+        let first = Task { await model.rowAppeared(model.books[49]) }
+        let second = Task { await model.rowAppeared(model.books[49]) }
+        await first.value
+        await second.value
+
+        #expect(repository.calls.map(\.offset) == [0, 50])
+    }
+
+    @Test("絞り込みが変わったら最初の50件から取り直す")
+    func restartsOnKeywordChange() async throws {
+        let (model, repository) = await loaded(count: 120)
+        await model.rowAppeared(model.books[30])
+
+        model.keyword = "走れ"
+        try await Task.sleep(for: BrowseViewModel.debounce + .milliseconds(200))
+
+        #expect(model.books.count == BrowseViewModel.pageSize)
+        #expect(repository.calls.map(\.offset) == [0, 50, 0])
+    }
+}

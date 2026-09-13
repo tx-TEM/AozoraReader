@@ -1,4 +1,5 @@
 import DetailFeature
+import ReaderFeature
 import Routing
 import SwiftUI
 
@@ -9,6 +10,8 @@ extension View {
             switch destination {
             case .book(let id):
                 DetailView(bookId: id)
+            case .reader(let url):
+                ReaderView(url: url)
             }
         }
     }

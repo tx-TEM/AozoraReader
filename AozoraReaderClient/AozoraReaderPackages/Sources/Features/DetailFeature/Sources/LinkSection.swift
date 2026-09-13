@@ -1,4 +1,5 @@
 import AozoraAPIResponse
+import Routing
 import SwiftUI
 
 struct LinkSection: View {
@@ -6,17 +7,13 @@ struct LinkSection: View {
 
     var body: some View {
         Section {
-            if canRead {
-                Button("読む") {}
+            // 本文の HTML を持たない作品は読めない。
+            if let htmlUrl = book.htmlUrl.flatMap(URL.init(string:)) {
+                NavigationLink("読む", value: Destination.reader(url: htmlUrl))
             }
-            if let url = book.cardUrl.flatMap(URL.init(string:)) {
-                Link("図書カードを開く", destination: url)
+            if let cardUrl = book.cardUrl.flatMap(URL.init(string:)) {
+                Link("図書カードを開く", destination: cardUrl)
             }
         }
-    }
-
-    /// 本文のファイルを持たない作品は読めない。
-    private var canRead: Bool {
-        book.textUrl != nil || book.htmlUrl != nil
     }
 }

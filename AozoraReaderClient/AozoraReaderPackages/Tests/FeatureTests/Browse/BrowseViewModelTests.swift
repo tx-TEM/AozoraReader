@@ -165,3 +165,36 @@ struct BrowsePagingTests {
         #expect(repository.calls.map(\.offset) == [0, 50, 0])
     }
 }
+
+// MARK: - 絞り込み対象
+
+@Suite("さがすタブの絞り込み対象")
+@MainActor
+struct BrowseFilterTargetTests {
+    @Test("作者に変えると作者で絞り込む")
+    func filtersByAuthor() async throws {
+        let repository = BookRepositoryMock()
+        let model = BrowseViewModel(repository: repository)
+
+        model.keyword = "太宰"
+        model.target = .author
+        try await Task.sleep(for: BrowseViewModel.debounce + .milliseconds(200))
+
+        #expect(repository.calls.last == .init(title: nil, author: "太宰", offset: 0))
+    }
+
+    @Test("対象を変えたら最初の50件から取り直す")
+    func restartsOnTargetChange() async throws {
+        let repository = BookRepositoryMock()
+        repository.items = (1...120).map { .stub(id: $0, title: "\($0)") }
+        let model = BrowseViewModel(repository: repository)
+
+        await model.task()
+        await model.rowAppeared(model.books[30])
+        model.target = .author
+        try await Task.sleep(for: .milliseconds(200))
+
+        #expect(model.books.count == BrowseViewModel.pageSize)
+        #expect(repository.calls.map(\.offset) == [0, 50, 0])
+    }
+}

@@ -17,6 +17,7 @@ public final class BrowseViewModel {
 
     private(set) var books: [BookSummaryResponse] = []
     private(set) var isLoading = false
+    private(set) var hasFailed = false
 
     var keyword: String = "" {
         didSet {
@@ -101,7 +102,12 @@ extension BrowseViewModel {
         }
 
         // 捨てられたリクエストの結果は使わない。古い一覧を残す。
-        guard Task.isNotCancelled, let page else { return }
+        guard Task.isNotCancelled else { return }
+        guard let page else {
+            hasFailed = true
+            return
+        }
+        hasFailed = false
         books = page.items
         total = page.total
     }

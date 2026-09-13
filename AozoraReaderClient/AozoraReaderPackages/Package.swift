@@ -15,17 +15,15 @@ let featureProducts: [Product] = featureNames.map {
     .library(name: "\($0)Feature", targets: ["\($0)Feature"])
 }
 
-let featureTestTargets: [Target] = featureNames.map {
-    .testTarget(
-        name: "\($0)FeatureTests",
-        dependencies: [
-            .target(name: "AozoraAPIResponse"),
-            .target(name: "Repository"),
-            .target(name: "\($0)Feature"),
-        ],
-        path: "Tests/Features/\($0)FeatureTests"
-    )
-}
+// Feature のテストは 1 つにまとめる。テストを持たない Feature のために空の的を作らない
+let featureTestTarget: Target = .testTarget(
+    name: "FeatureTests",
+    dependencies: [
+        .target(name: "AozoraAPIResponse"),
+        .target(name: "Repository"),
+    ] + featureNames.map { .target(name: "\($0)Feature") },
+    path: "Tests/FeatureTests"
+)
 
 let featureTargets: [Target] = featureNames.map {
     .target(
@@ -96,6 +94,6 @@ let package = Package(
                 .target(name: "AozoraAPIResponse"),
             ]
         ),
-    ] + featureTargets + featureTestTargets,
+    ] + featureTargets + [featureTestTarget],
     swiftLanguageModes: [.v6]
 )

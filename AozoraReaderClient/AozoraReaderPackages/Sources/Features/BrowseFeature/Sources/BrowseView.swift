@@ -12,6 +12,7 @@ public struct BrowseView: View {
     public var body: some View {
         List(model.books) { book in
             BookRow(book: book)
+                .task { await model.rowAppeared(book) }
         }
         .safeAreaInset(edge: .top) {
             SearchBar(

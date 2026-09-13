@@ -43,10 +43,11 @@ actor BooksStorage {
                 EXISTS (
                     SELECT 1 FROM book_persons bp
                     JOIN persons p ON p.person_id = bp.person_id
-                    WHERE bp.book_id = b.book_id AND p.full_name LIKE ? ESCAPE '\\'
+                    WHERE bp.book_id = b.book_id
+                      AND replace(p.full_name, ' ', '') LIKE ? ESCAPE '\\'
                 )
                 """)
-            bindings.append(likePattern(author))
+            bindings.append(likePattern(withoutSpaces(author)))
         }
 
         if let personId {
@@ -228,6 +229,13 @@ actor BooksStorage {
     }
 
     private func int(_ value: Binding?) -> Int { Int(value as? Int64 ?? 0) }
+
+    /// 人物名は姓と名を半角スペースで繋いだ形で持っている。
+    /// 打つときにスペースを入れないほうが普通なので、両側から落として突き合わせる。
+    private func withoutSpaces(_ keyword: String) -> String {
+        keyword.replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: "\u{3000}", with: "")
+    }
 
     /// LIKE のワイルドカードを打ち消したうえで部分一致パターンにする。
     private func likePattern(_ keyword: String) -> String {

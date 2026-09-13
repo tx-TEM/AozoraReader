@@ -15,11 +15,21 @@ public struct BrowseView: View {
                 .task { await model.rowAppeared(book) }
         }
         .safeAreaInset(edge: .top) {
-            SearchBar(
-                text: $model.keyword,
-                isComposing: $model.isComposing,
-                placeholder: "作品名で絞り込む"
-            )
+            VStack(spacing: 0) {
+                SearchBar(
+                    text: $model.keyword,
+                    isComposing: $model.isComposing,
+                    placeholder: model.target.placeholder
+                )
+                Picker("絞り込み対象", selection: $model.target) {
+                    ForEach(FilterTarget.allCases, id: \.self) { target in
+                        Text(target.name).tag(target)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .padding(.bottom, 8)
+            }
             .background(.bar)
         }
         .dismissesKeyboardOnInteraction()

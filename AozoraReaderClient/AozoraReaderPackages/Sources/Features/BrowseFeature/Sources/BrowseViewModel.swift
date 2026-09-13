@@ -25,6 +25,13 @@ public final class BrowseViewModel {
         }
     }
 
+    var target: FilterTarget = .title {
+        didSet {
+            guard oldValue != target else { return }
+            scheduleSearch(after: .zero)
+        }
+    }
+
     /// 変換が確定していない文字列を編集中かどうか。
     var isComposing: Bool = false {
         didSet {
@@ -41,6 +48,14 @@ public final class BrowseViewModel {
     private var isLoadingNextPage = false
 
     private var title: String? {
+        target == .title ? filter : nil
+    }
+
+    private var author: String? {
+        target == .author ? filter : nil
+    }
+
+    private var filter: String? {
         keyword.isEmpty ? nil : keyword
     }
 
@@ -78,7 +93,7 @@ extension BrowseViewModel {
         let page = await showingSpinner {
             try? await repository.books(
                 title: title,
-                author: nil,
+                author: author,
                 personId: nil,
                 limit: Self.pageSize,
                 offset: 0
@@ -100,7 +115,7 @@ extension BrowseViewModel {
         let keyword = keyword
         let page = try? await repository.books(
             title: title,
-            author: nil,
+            author: author,
             personId: nil,
             limit: Self.pageSize,
             offset: books.count

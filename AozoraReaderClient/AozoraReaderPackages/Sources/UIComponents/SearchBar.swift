@@ -15,17 +15,21 @@ public struct SearchBar: UIViewRepresentable {
 
     private let placeholder: String
     private let isLoading: Bool
+    /// 検索キーをたたいたときに呼ぶ。
+    private let onSubmit: () -> Void
 
     public init(
         text: Binding<String>,
         isComposing: Binding<Bool>,
         placeholder: String = "",
-        isLoading: Bool = false
+        isLoading: Bool = false,
+        onSubmit: @escaping () -> Void = {}
     ) {
         _text = text
         _isComposing = isComposing
         self.placeholder = placeholder
         self.isLoading = isLoading
+        self.onSubmit = onSubmit
     }
 
     public func makeUIView(context: Context) -> UISearchBar {
@@ -69,6 +73,7 @@ public struct SearchBar: UIViewRepresentable {
 
         public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
             searchBar.resignFirstResponder()
+            parent.onSubmit()
         }
 
         fileprivate func setLoading(_ isLoading: Bool, on searchBar: UISearchBar) {

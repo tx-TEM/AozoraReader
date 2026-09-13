@@ -68,6 +68,11 @@ public final class BrowseViewModel {
         await search()
     }
 
+    /// 検索キーをたたいたときに呼ぶ。デバウンスを待たずに送る。
+    func submit() {
+        scheduleSearch(after: .zero)
+    }
+
     /// 一覧の行が出たときに呼ぶ。末尾に近ければ次の 50 件を取りに行く。
     func rowAppeared(_ book: BookSummaryResponse) async {
         guard books.suffix(Self.prefetchDistance).contains(where: { $0.id == book.id }) else { return }

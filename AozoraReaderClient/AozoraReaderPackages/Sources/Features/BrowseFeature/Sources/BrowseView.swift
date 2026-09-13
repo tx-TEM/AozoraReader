@@ -33,7 +33,8 @@ public struct BrowseView: View {
             SearchBar(
                 text: $model.keyword,
                 isComposing: $model.isComposing,
-                placeholder: model.target.placeholder
+                placeholder: model.target.placeholder,
+                onSubmit: { model.submit() }
             )
             Picker("絞り込み対象", selection: $model.target) {
                 ForEach(FilterTarget.allCases, id: \.self) { target in

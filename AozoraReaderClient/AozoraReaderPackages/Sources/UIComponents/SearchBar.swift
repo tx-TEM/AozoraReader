@@ -38,6 +38,7 @@ public struct SearchBar: UIViewRepresentable {
         searchBar.searchBarStyle = .minimal
         searchBar.autocapitalizationType = .none
         searchBar.returnKeyType = .search
+        searchBar.searchTextField.enablesReturnKeyAutomatically = false
         return searchBar
     }
 

@@ -8,6 +8,7 @@ import PackageDescription
 let featureNames: [String] = [
     "Browse",
     "Detail",
+    "Reader",
 ]
 
 let featureProducts: [Product] = featureNames.map {

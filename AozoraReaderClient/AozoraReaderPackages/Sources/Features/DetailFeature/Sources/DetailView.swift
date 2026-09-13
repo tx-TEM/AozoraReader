@@ -1,4 +1,5 @@
 import SwiftUI
+import UIComponents
 
 /// 作品の詳細画面。
 public struct DetailView: View {
@@ -13,13 +14,22 @@ public struct DetailView: View {
     }
 
     public var body: some View {
-        List {
-            if let book = model.book {
-                TitleSection(book: book)
-                BibliographySection(book: book)
-                LinkSection(book: book)
+        content
+            .task { await model.task() }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if model.hasFailed {
+            ErrorView { Task { await model.task() } }
+        } else {
+            List {
+                if let book = model.book {
+                    TitleSection(book: book)
+                    BibliographySection(book: book)
+                    LinkSection(book: book)
+                }
             }
         }
-        .task { await model.task() }
     }
 }

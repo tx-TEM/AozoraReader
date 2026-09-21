@@ -16,6 +16,7 @@ public struct DetailView: View {
     public var body: some View {
         content
             .task { await model.task() }
+            .accessibilityIdentifier("detail")
     }
 
     @ViewBuilder

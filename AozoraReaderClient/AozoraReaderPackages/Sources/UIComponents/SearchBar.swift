@@ -15,6 +15,8 @@ public struct SearchBar: UIViewRepresentable {
 
     private let placeholder: String
     private let isLoading: Bool
+    /// 入力欄に振る accessibilityIdentifier。
+    private let identifier: String?
     /// 検索キーをたたいたときに呼ぶ。
     private let onSubmit: () -> Void
 
@@ -23,12 +25,14 @@ public struct SearchBar: UIViewRepresentable {
         isComposing: Binding<Bool>,
         placeholder: String = "",
         isLoading: Bool = false,
+        identifier: String? = nil,
         onSubmit: @escaping () -> Void = {}
     ) {
         _text = text
         _isComposing = isComposing
         self.placeholder = placeholder
         self.isLoading = isLoading
+        self.identifier = identifier
         self.onSubmit = onSubmit
     }
 
@@ -39,6 +43,7 @@ public struct SearchBar: UIViewRepresentable {
         searchBar.autocapitalizationType = .none
         searchBar.returnKeyType = .search
         searchBar.searchTextField.enablesReturnKeyAutomatically = false
+        searchBar.searchTextField.accessibilityIdentifier = identifier
         return searchBar
     }
 
@@ -51,6 +56,7 @@ public struct SearchBar: UIViewRepresentable {
         }
 
         searchBar.placeholder = placeholder
+        searchBar.searchTextField.accessibilityIdentifier = identifier
         context.coordinator.setLoading(isLoading, on: searchBar)
     }
 

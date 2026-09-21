@@ -1,0 +1,11 @@
+anchor: detail
+stub: true
+
+names: [作品詳細, 詳細画面]
+
+summary: 作品の詳細。作品の情報と関係者を出し、図書カードと本文へのリンクを置く
+
+actions:
+  - tap: BackButton
+    to: browse
+    kind: back

@@ -1,0 +1,25 @@
+anchor: reader
+
+names: [リーダー, リーダー画面, 本文]
+
+summary: 作品の本文を青空文庫の HTML のまま読む。読んでいるあいだはタブバーを隠す
+
+files:
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/ReaderFeature/Sources/ReaderView.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/ReaderFeature/Sources/WebView.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/ReaderFeature/Sources/ReaderScript.swift
+
+actions:
+  - tap: BackButton
+    to: detail
+    kind: back
+
+  - scroll: down
+    result: 本文を読み進める
+
+  - tap: reader.error.reloadButton
+    result: 本文を取り直す
+
+states:
+  - expect: reader.error.reloadButton
+    when: 本文の取得に失敗したとき

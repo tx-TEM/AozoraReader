@@ -1,11 +1,35 @@
 anchor: detail
-stub: true
 
-names: [作品詳細, 詳細画面]
+names: [作品詳細, 詳細画面, 作品の詳細]
 
-summary: 作品の詳細。作品の情報と関係者を出し、図書カードと本文へのリンクを置く
+summary: 作品の書誌と関係者を出し、本文を読むリンクと青空文庫の図書カードへのリンクを置く
+
+files:
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/DetailView.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/DetailViewModel.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/TitleSection.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/BibliographySection.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/ContributorRow.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/LinkSection.swift
 
 actions:
+  - tap: detail.readButton
+    to: reader
+
+  - tap: detail.cardLink
+    result: 青空文庫の図書カードを Safari で開く。アプリの外に出るので、ここでフローが切れる
+
   - tap: BackButton
     to: browse
     kind: back
+
+  - tap: detail.error.reloadButton
+    result: 作品を取り直す。成功すると詳細が出る
+    expect: detail.cardLink
+
+states:
+  - expect: detail.readButton
+    when: 本文の HTML を持つ作品のとき
+
+  - expect: detail.error.reloadButton
+    when: 取得に失敗したとき

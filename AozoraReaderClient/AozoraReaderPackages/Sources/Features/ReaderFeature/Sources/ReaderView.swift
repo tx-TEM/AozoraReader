@@ -15,12 +15,14 @@ public struct ReaderView: View {
             .navigationBarTitleDisplayMode(.inline)
             // 本文にタブバーが被るので、読んでいるあいだは隠す。
             .toolbar(.hidden, for: .tabBar)
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("reader")
     }
 
     @ViewBuilder
     private var content: some View {
         if hasFailed {
-            ErrorView { hasFailed = false }
+            ErrorView(reloadIdentifier: "reader.error.reloadButton") { hasFailed = false }
         } else {
             WebView(url: url, hasFailed: $hasFailed)
         }

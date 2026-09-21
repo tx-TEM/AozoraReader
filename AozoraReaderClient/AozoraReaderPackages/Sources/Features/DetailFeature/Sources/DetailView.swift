@@ -16,13 +16,16 @@ public struct DetailView: View {
     public var body: some View {
         content
             .task { await model.task() }
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("detail")
     }
 
     @ViewBuilder
     private var content: some View {
         if model.hasFailed {
-            ErrorView { Task { await model.task() } }
+            ErrorView(reloadIdentifier: "detail.error.reloadButton") {
+                Task { await model.task() }
+            }
         } else {
             List {
                 if let book = model.book {

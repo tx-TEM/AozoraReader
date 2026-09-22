@@ -27,7 +27,7 @@ public struct BrowseView: View {
         } else {
             List(model.books) { book in
                 BookRow(book: book)
-                    .accessibilityIdentifier("browse.bookRow.\(book.id)")
+                    .accessibilityIdentifier("browse.bookRow.\(book.title)")
                     .task { await model.rowAppeared(book) }
             }
         }

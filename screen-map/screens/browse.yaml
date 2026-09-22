@@ -1,0 +1,49 @@
+anchor: browse
+
+names: [さがす, さがすタブ, 作品一覧, 一覧画面]
+
+summary: 作品の一覧を絞り込んで探す。作品名か作者かを選べ、作品をタップすると詳細へ行く
+
+files:
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/BrowseFeature/Sources/BrowseView.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/BrowseFeature/Sources/BrowseViewModel.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/BrowseFeature/Sources/BookRow.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/BrowseFeature/Sources/FilterTarget.swift
+
+actions:
+  - tap: browse.bookRow.*
+    to: detail
+    select:
+      index: 0
+      capture: bookTitle
+
+  - text: browse.searchField
+    result: 入力が 300ms 止まるか変換が確定すると絞り込みを送り、一覧が入れ替わる
+    expect: browse.searchField
+
+  - tap: Search
+    result: デバウンスを待たずに絞り込みを送り、キーボードが閉じる
+
+  - tap: Clear text
+    by: label
+    result: 入力が消え、絞り込みが解除されて全作品に戻る
+    expect: browse.searchField
+
+  - tap: browse.targetPicker.title
+    result: 作品名で絞り込むようになり、その場で送り直す。入力欄のプレースホルダが「作品名で絞り込む」に変わる
+    expect: browse.targetPicker.title
+
+  - tap: browse.targetPicker.author
+    result: 作者で絞り込むようになり、その場で送り直す。入力欄のプレースホルダが「作者で絞り込む」に変わる
+    expect: browse.targetPicker.author
+
+  - scroll: down
+    result: 末尾から 20 件以内に入ると次の 50 件を取得して一覧に足す。キーボードが開いていれば閉じる
+
+  - tap: browse.error.reloadButton
+    result: 取り直す。成功すると一覧に戻る
+    expect: browse.bookRow.*
+
+states:
+  - expect: browse.error.reloadButton
+    when: 取得に失敗したとき

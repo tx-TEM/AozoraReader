@@ -23,7 +23,7 @@ public struct DetailView: View {
     @ViewBuilder
     private var content: some View {
         if model.hasFailed {
-            ErrorView(reloadIdentifier: "detail.error.reloadButton") {
+            ErrorView(reloadIdentifier: "detail.error.reload_button") {
                 Task { await model.task() }
             }
         } else {

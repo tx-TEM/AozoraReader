@@ -9,17 +9,22 @@ files:
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/ReaderFeature/Sources/WebView.swift
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/ReaderFeature/Sources/ReaderScript.swift
 
-actions:
-  - tap: BackButton
-    to: detail
-    kind: back
+elements:
+  - id: BackButton
+    name: 戻る（左上）
+    actions:
+      - tap:
+        summary: 前の画面に戻る
+        expect: {screen: back, via: back}
 
-  - scroll: down
-    result: 本文を読み進める
-
-  - tap: reader.error.reloadButton
-    result: 本文を取り直す
-
-states:
-  - expect: reader.error.reloadButton
+  - id: reader.error.reload_button
+    name: 再読み込み（画面中央）
     when: 本文の取得に失敗したとき
+    actions:
+      - tap:
+        summary: 本文を取り直す
+        expect: {hidden: self}
+
+gestures:
+  - scroll: down
+    summary: 本文を読み進める

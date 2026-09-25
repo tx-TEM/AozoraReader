@@ -22,7 +22,7 @@ public struct ReaderView: View {
     @ViewBuilder
     private var content: some View {
         if hasFailed {
-            ErrorView(reloadIdentifier: "reader.error.reloadButton") { hasFailed = false }
+            ErrorView(reloadIdentifier: "reader.error.reload_button") { hasFailed = false }
         } else {
             WebView(url: url, hasFailed: $hasFailed)
         }

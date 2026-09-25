@@ -10,40 +10,60 @@ files:
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/BrowseFeature/Sources/BookRow.swift
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/BrowseFeature/Sources/FilterTarget.swift
 
-actions:
-  - tap: browse.bookRow.*
-    to: detail
-    select:
-      index: 0
-      capture: bookTitle
+ready:
+  any: [browse.book_row.*, browse.error.reload_button]
 
-  - text: browse.searchField
-    result: 入力が 300ms 止まるか変換が確定すると絞り込みを送り、一覧が入れ替わる
-    expect: browse.searchField
+elements:
+  - id: browse.book_row.*
+    name: 作品の行（ID は表示中の作品名）
+    actions:
+      - tap:
+        summary: 作品の詳細を開く
+        expect: {screen: detail, via: push}
 
-  - tap: Search
-    result: デバウンスを待たずに絞り込みを送り、キーボードが閉じる
+  - id: browse.search_field
+    name: 絞り込みの入力欄（上部）
+    actions:
+      - text:
+        summary: 入力が 300ms 止まるか変換が確定すると絞り込みを送り、一覧が入れ替わる
+        expect: {value: self}
 
-  - tap: Clear text
+  - id: Search
+    name: キーボードの検索キー（OS）
+    actions:
+      - tap:
+        summary: デバウンスを待たずに絞り込みを送り、キーボードを閉じる
+
+  - id: Clear text
+    name: 入力欄のクリアボタン（OS）
     by: label
-    result: 入力が消え、絞り込みが解除されて全作品に戻る
-    expect: browse.searchField
+    actions:
+      - tap:
+        summary: 入力を消し、絞り込みを解除して全作品に戻す
+        expect: {value: browse.search_field}
 
-  - tap: browse.targetPicker.title
-    result: 作品名で絞り込むようになり、その場で送り直す。入力欄のプレースホルダが「作品名で絞り込む」に変わる
-    expect: browse.targetPicker.title
+  - id: browse.target_picker.title
+    name: 作品名（入力欄の下のセグメント）
+    actions:
+      - tap:
+        summary: 作品名で絞り込むように切り替え、その場で送り直す。プレースホルダが「作品名で絞り込む」に変わる
+        expect: {selected: self}
 
-  - tap: browse.targetPicker.author
-    result: 作者で絞り込むようになり、その場で送り直す。入力欄のプレースホルダが「作者で絞り込む」に変わる
-    expect: browse.targetPicker.author
+  - id: browse.target_picker.author
+    name: 作者（入力欄の下のセグメント）
+    actions:
+      - tap:
+        summary: 作者で絞り込むように切り替え、その場で送り直す。プレースホルダが「作者で絞り込む」に変わる
+        expect: {selected: self}
 
-  - scroll: down
-    result: 末尾から 20 件以内に入ると次の 50 件を取得して一覧に足す。キーボードが開いていれば閉じる
-
-  - tap: browse.error.reloadButton
-    result: 取り直す。成功すると一覧に戻る
-    expect: browse.bookRow.*
-
-states:
-  - expect: browse.error.reloadButton
+  - id: browse.error.reload_button
+    name: 再読み込み（画面中央）
     when: 取得に失敗したとき
+    actions:
+      - tap:
+        summary: 一覧を取り直す。成功すると一覧が出る
+        expect: {visible: browse.book_row.*}
+
+gestures:
+  - scroll: down
+    summary: 末尾から 20 件以内に入ると次の 50 件を取得して一覧に足す。キーボードが開いていれば閉じる

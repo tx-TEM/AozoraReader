@@ -12,24 +12,36 @@ files:
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/ContributorRow.swift
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/LinkSection.swift
 
-actions:
-  - tap: detail.readButton
-    to: reader
+ready:
+  any: [detail.card_link, detail.error.reload_button]
 
-  - tap: detail.cardLink
-    result: 青空文庫の図書カードを Safari で開く。アプリの外に出るので、ここでフローが切れる
-
-  - tap: BackButton
-    to: browse
-    kind: back
-
-  - tap: detail.error.reloadButton
-    result: 作品を取り直す。成功すると詳細が出る
-    expect: detail.cardLink
-
-states:
-  - expect: detail.readButton
+elements:
+  - id: detail.read_button
+    name: 読む（リンクのセクション）
     when: 本文の HTML を持つ作品のとき
+    actions:
+      - tap:
+        summary: 本文をリーダーで開く
+        expect: {screen: reader, via: push}
 
-  - expect: detail.error.reloadButton
+  - id: detail.card_link
+    name: 図書カードを開く（リンクのセクション）
+    actions:
+      - tap:
+        summary: 青空文庫の図書カードを Safari で開く
+        expect: {external: safari}
+
+  - id: BackButton
+    name: 戻る（左上）
+    actions:
+      - tap:
+        summary: 前の画面に戻る
+        expect: {screen: back, via: back}
+
+  - id: detail.error.reload_button
+    name: 再読み込み（画面中央）
     when: 取得に失敗したとき
+    actions:
+      - tap:
+        summary: 作品を取り直す。成功すると詳細が出る
+        expect: {visible: detail.card_link}

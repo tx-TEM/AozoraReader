@@ -21,13 +21,13 @@ public struct BrowseView: View {
     @ViewBuilder
     private var content: some View {
         if model.hasFailed {
-            ErrorView(reloadIdentifier: "browse.error.reloadButton") {
+            ErrorView(reloadIdentifier: "browse.error.reload_button") {
                 Task { await model.task() }
             }
         } else {
             List(model.books) { book in
                 BookRow(book: book)
-                    .accessibilityIdentifier("browse.bookRow.\(book.title)")
+                    .accessibilityIdentifier("browse.book_row.\(book.title)")
                     .task { await model.rowAppeared(book) }
             }
         }
@@ -39,7 +39,7 @@ public struct BrowseView: View {
                 text: $model.keyword,
                 isComposing: $model.isComposing,
                 placeholder: model.target.placeholder,
-                identifier: "browse.searchField",
+                identifier: "browse.search_field",
                 onSubmit: { model.submit() }
             )
             Picker("絞り込み対象", selection: $model.target) {
@@ -58,8 +58,8 @@ public struct BrowseView: View {
 
     private func identifier(for target: FilterTarget) -> String {
         switch target {
-        case .title: "browse.targetPicker.title"
-        case .author: "browse.targetPicker.author"
+        case .title: "browse.target_picker.title"
+        case .author: "browse.target_picker.author"
         }
     }
 }

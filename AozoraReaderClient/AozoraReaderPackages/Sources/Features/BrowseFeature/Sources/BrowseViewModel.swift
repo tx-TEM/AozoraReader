@@ -46,18 +46,12 @@ public final class BrowseViewModel {
     private var searchTask: Task<Void, Never>?
     /// 絞り込みに一致する総件数。ここに達したら取りに行かない。
     private var total = 0
-    private var isLoadingNextPage = false
+    /// いま出している一覧をどの条件で取ったか。次ページはこの条件で取りに行く。
+    private var shownQuery: SearchQuery?
+    private var nextPageTask: Task<Void, Never>?
 
-    private var title: String? {
-        target == .title ? filter : nil
-    }
-
-    private var author: String? {
-        target == .author ? filter : nil
-    }
-
-    private var filter: String? {
-        keyword.isEmpty ? nil : keyword
+    private var query: SearchQuery {
+        SearchQuery(keyword: keyword, target: target)
     }
 
     public init(repository: any BookRepositoryProtocol = BookRepository()) {
@@ -74,9 +68,16 @@ public final class BrowseViewModel {
     }
 
     /// 一覧の行が出たときに呼ぶ。末尾に近ければ次の 50 件を取りに行く。
+    /// 取得中は始めず、総件数に達したら打ち切る。
     func rowAppeared(_ book: BookSummaryResponse) async {
         guard books.suffix(Self.prefetchDistance).contains(where: { $0.id == book.id }) else { return }
-        await loadNextPage()
+        guard nextPageTask == nil, books.count < total, let shownQuery else { return }
+        let task = Task { [weak self] in
+            guard let self else { return }
+            await loadNextPage(of: shownQuery)
+        }
+        nextPageTask = task
+        await task.value
     }
 }
 
@@ -96,10 +97,11 @@ extension BrowseViewModel {
     }
 
     private func search() async {
+        let query = query
         let page = await showingSpinner {
             try? await repository.books(
-                title: title,
-                author: author,
+                title: query.title,
+                author: query.author,
                 personId: nil,
                 limit: Self.pageSize,
                 offset: 0
@@ -113,27 +115,28 @@ extension BrowseViewModel {
             return
         }
         hasFailed = false
+        // 一覧を差し替える。前の一覧に繋ぐはずだった次ページの取得は捨てる。
+        nextPageTask?.cancel()
+        nextPageTask = nil
         books = page.items
         total = page.total
+        shownQuery = query
     }
 
-    /// 次の 50 件を足す。取得中は始めず、総件数に達したら打ち切る。
-    private func loadNextPage() async {
-        guard !isLoadingNextPage, books.count < total else { return }
-        isLoadingNextPage = true
-        defer { isLoadingNextPage = false }
-
-        let keyword = keyword
+    /// `query` で取った一覧に、次の 50 件を足す。
+    private func loadNextPage(of query: SearchQuery) async {
         let page = try? await repository.books(
-            title: title,
-            author: author,
+            title: query.title,
+            author: query.author,
             personId: nil,
             limit: Self.pageSize,
             offset: books.count
         )
 
-        // 待っているあいだに絞り込みが変わっていたら、その結果は繋がらない。
-        guard let page, keyword == self.keyword, page.offset == books.count else { return }
+        // 捨てられた取得は、差し替えた後の一覧に触らない。
+        guard Task.isNotCancelled else { return }
+        nextPageTask = nil
+        guard let page, query == shownQuery else { return }
         books += page.items
         total = page.total
     }

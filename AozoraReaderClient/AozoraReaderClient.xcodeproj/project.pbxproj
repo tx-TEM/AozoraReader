@@ -16,6 +16,7 @@
 /* Begin PBXFileReference section */
 		8D076ED530559605007ED17A /* AozoraReaderPackages */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AozoraReaderPackages; sourceTree = "<group>"; };
 		8D2F30BF2E2DF0220003EC30 /* AozoraReaderClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AozoraReaderClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D85BBCD30682FB50030449C /* AozoraReaderClient.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = AozoraReaderClient.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -44,6 +45,7 @@
 		8D2F30B62E2DF0220003EC30 = {
 			isa = PBXGroup;
 			children = (
+				8D85BBCD30682FB50030449C /* AozoraReaderClient.xctestplan */,
 				8D2F30C12E2DF0220003EC30 /* AozoraReaderClient */,
 				8D076ED530559605007ED17A /* AozoraReaderPackages */,
 				8D2F30C02E2DF0220003EC30 /* Products */,

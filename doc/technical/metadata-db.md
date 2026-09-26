@@ -138,13 +138,14 @@ API を使う側が把握しておくべき、データの形と欠損。
 
 ## 読み出し
 
-`BooksStorage` が 3 つのメソッドを持つ。SQL は素の文字列で書き、値はすべてプレースホルダでバインドしている。
+`BooksStorage` が 4 つのメソッドを持つ。SQL は素の文字列で書き、値はすべてプレースホルダでバインドしている。
 
 | メソッド | 対応するエンドポイント |
 |---|---|
 | `books(title:author:personId:limit:offset:)` | `GET /books` |
 | `book(id:)` | `GET /books/{bookId}` |
 | `person(id:)` | `GET /persons/{personId}` |
+| `recommendations()` | `GET /recommendations` |
 
 ### 検索条件の組み立て
 
@@ -212,6 +213,21 @@ b.book_id, b.title, b.subtitle
 （[さがすタブ](../screen/browse.md#50-件ずつにした理由)）。
 
 `contributors` はどちらも同じように引く。
+
+### おすすめ
+
+`categories` を `category_id` の順に引き、カテゴリーごとに `book_categories` を通して作品を引く。
+
+```sql
+SELECT b.book_id, b.title, b.subtitle FROM books b
+JOIN book_categories bc ON bc.book_id = b.book_id
+WHERE bc.category_id = ?
+ORDER BY random()
+LIMIT 10
+```
+
+カテゴリーの数だけこのクエリを投げる。`ORDER BY random()` なので、呼ぶたびに中身が変わる。
+関係者は全セクションの作品をまとめて 1 回で引く（[contributors の取得](#contributors-の取得)と同じ）。
 
 ### API に出していない列
 

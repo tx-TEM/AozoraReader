@@ -1,6 +1,6 @@
-/// 作品。`GET /books` が返す。
+/// 作品の詳細。
 ///
-/// オプショナルな値は、持たない作品ではレスポンスからキーごと省かれる。
+/// オプショナルな値は、その値を持たない作品では nil。
 public struct BookResponse: Sendable, Hashable, Identifiable {
     public let id: Int
     public let title: String

@@ -1,4 +1,4 @@
-/// 一覧に出す項目だけを持つ作品。詳細は `GET /books/{bookId}`。
+/// 作品を並べて出すときの項目だけを持つ作品。詳細は ``BookResponse``。
 public struct BookSummaryResponse: Sendable, Hashable, Identifiable {
     public let id: Int
     public let title: String

@@ -1,4 +1,4 @@
-/// 一覧に出す関係者。
+/// 作品を並べて出すときの関係者。詳細は ``ContributorResponse``。
 public struct ContributorSummaryResponse: Sendable, Hashable, Identifiable {
     public var id: Int { personId }
 

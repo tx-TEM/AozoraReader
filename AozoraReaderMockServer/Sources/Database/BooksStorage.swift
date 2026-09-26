@@ -5,10 +5,13 @@ import SQLite
 ///
 /// DB は `scripts/build_db.py` が CSV から生成したもので、
 /// books / persons / book_persons の 3 テーブルに正規化されている。
+/// 作品のカテゴリーは categories / book_categories に持っている。
 /// 読み取り専用なので書き込み系の API は持たない。
 actor BooksStorage {
     /// 一覧 API が一度に返せる最大件数。
     static let maxLimit = 200
+    /// おすすめの 1 セクションに入れる件数。
+    static let recommendationLimit = 10
 
     private let db: Connection
 
@@ -94,6 +97,47 @@ actor BooksStorage {
         var book = makeBook(from: row)
         book.contributors = try contributors(forBookIds: [book.id])[book.id] ?? []
         return book
+    }
+
+    // MARK: - おすすめ
+
+    /// カテゴリーごとに、ランダムに選んだ作品を返す。
+    /// カテゴリーは全部返し、並びは ID の順（other は最後）。
+    func recommendations() throws -> [Components.Schemas.RecommendationSection] {
+        let categories = try db.prepare(
+            "SELECT category_id, name FROM categories ORDER BY category_id"
+        ).map { row in
+            Components.Schemas.Category(id: string(row[0]), name: string(row[1]))
+        }
+
+        var sections = try categories.map { category in
+            let rows = try db.prepare(
+                """
+                SELECT \(Self.summaryColumns) FROM books b
+                JOIN book_categories bc ON bc.book_id = b.book_id
+                WHERE bc.category_id = ?
+                ORDER BY random()
+                LIMIT ?
+                """,
+                [category.id, Int64(Self.recommendationLimit)]
+            )
+            return Components.Schemas.RecommendationSection(
+                category: category,
+                books: rows.map(makeSummary(from:))
+            )
+        }
+
+        // 関係者はセクションをまたいでまとめて 1 回で引く。
+        let contributors = try contributorSummaries(
+            forBookIds: sections.flatMap { $0.books.map(\.id) }
+        )
+        for sectionIndex in sections.indices {
+            for bookIndex in sections[sectionIndex].books.indices {
+                let id = sections[sectionIndex].books[bookIndex].id
+                sections[sectionIndex].books[bookIndex].contributors = contributors[id] ?? []
+            }
+        }
+        return sections
     }
 
     // MARK: - 人物

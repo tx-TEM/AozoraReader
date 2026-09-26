@@ -1,0 +1,48 @@
+anchor: recommend
+
+names: [おすすめ, おすすめタブ, おすすめ画面]
+
+summary: カテゴリーごとに作品を横スクロールで並べる。作品を押すと詳細へ行き、末尾に「もっと見る」がある
+
+files:
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/RecommendFeature/Sources/RecommendView.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/RecommendFeature/Sources/RecommendViewModel.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/RecommendFeature/Sources/RecommendationSection.swift
+  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/RecommendFeature/Sources/BookCard.swift
+
+ready:
+  any: [recommend.carousel.*, recommend.error.reload_button]
+
+elements:
+  - id: recommend.carousel.*
+    name: カテゴリーのカルーセル（ID は見出しのカテゴリー名）
+    scroll: horizontal
+    children:
+      - id: recommend.book.*
+        name: 作品の表紙（ID は作品名）
+        actions:
+          - tap:
+            summary: 作品の詳細を開く
+            expect: {screen: detail, via: push}
+
+      - id: recommend.more_button
+        name: もっと見る（カルーセルの末尾）
+        actions:
+          - tap:
+            summary: 行き先のカテゴリーの一覧がまだ無いので、何も起きない
+
+  - id: recommend.error.reload_button
+    name: 再読み込み（画面中央）
+    when: 取得に失敗したとき
+    actions:
+      - tap:
+        summary: おすすめを取り直す。成功するとカルーセルが出る
+        expect: {visible: recommend.carousel.*}
+
+  - id: さがす
+    name: さがす（タブバー）
+    by: label
+    actions:
+      - tap:
+        summary: さがすタブに切り替える
+        expect: {screen: browse, via: tab}

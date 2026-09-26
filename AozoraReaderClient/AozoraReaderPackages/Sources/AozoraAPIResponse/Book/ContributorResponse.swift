@@ -1,4 +1,4 @@
-/// 詳細に出す関係者。
+/// 作品の詳細に出す関係者。
 public struct ContributorResponse: Sendable, Hashable, Identifiable {
     public var id: Int { personId }
 

@@ -64,6 +64,14 @@ elements:
         summary: 一覧を取り直す。成功すると一覧が出る
         expect: {visible: browse.book_row.*}
 
+  - id: おすすめ
+    name: おすすめ（タブバー）
+    by: label
+    actions:
+      - tap:
+        summary: おすすめタブに切り替える
+        expect: {screen: recommend, via: tab}
+
 gestures:
   - scroll: down
     summary: 末尾から 20 件以内に入ると次の 50 件を取得して一覧に足す。キーボードが開いていれば閉じる

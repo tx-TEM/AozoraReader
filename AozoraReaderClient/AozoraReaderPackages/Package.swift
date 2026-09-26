@@ -9,6 +9,7 @@ let featureNames: [String] = [
     "Browse",
     "Detail",
     "Reader",
+    "Recommend",
 ]
 
 let featureProducts: [Product] = featureNames.map {

@@ -58,6 +58,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BookPage'
+  /recommendations:
+    get:
+      operationId: getRecommendations
+      summary: おすすめをカテゴリーごとに返す
+      description: |
+        カテゴリーは全部返す。並びは ID の順で、その他（`other`）は最後。
+        各セクションに入れる作品は、呼ぶたびにランダムに変わる。
+        分類番号を複数持つ作品は、当てはまるカテゴリーすべてに入りうる。
+      responses:
+        '200':
+          description: おすすめのセクション。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recommendations'
   /books/{bookId}:
     get:
       operationId: getBook
@@ -147,6 +162,42 @@ components:
         - limit
         - offset
         - items
+    Recommendations:
+      type: object
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecommendationSection'
+      required:
+        - sections
+    RecommendationSection:
+      type: object
+      description: 1 カテゴリー分のおすすめ。
+      properties:
+        category:
+          $ref: '#/components/schemas/Category'
+        books:
+          type: array
+          description: このカテゴリーからランダムに選んだ最大 10 件。
+          items:
+            $ref: '#/components/schemas/BookSummary'
+      required:
+        - category
+        - books
+    Category:
+      type: object
+      description: NDC の類。分類番号の無い作品は「その他」に入る。
+      properties:
+        id:
+          type: string
+          description: 類の番号（`9`）。その他は `other`。
+        name:
+          type: string
+          description: NDC 標準の類名（文学 など）。その他は「その他」。
+      required:
+        - id
+        - name
     BookSummary:
       type: object
       description: |

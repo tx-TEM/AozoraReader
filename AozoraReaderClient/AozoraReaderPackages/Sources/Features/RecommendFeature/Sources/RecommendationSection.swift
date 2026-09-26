@@ -15,14 +15,18 @@ struct RecommendationSection: View {
                 LazyHStack(alignment: .top, spacing: 16) {
                     ForEach(section.books) { book in
                         BookCard(book: book)
+                            .accessibilityIdentifier("recommend.book.\(book.title)")
                     }
                     MoreButton()
+                        .accessibilityIdentifier("recommend.more_button")
                 }
                 .scrollTargetLayout()
             }
             .contentMargins(.horizontal, 16, for: .scrollContent)
             .scrollTargetBehavior(.viewAligned)
             .scrollIndicators(.hidden)
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("recommend.carousel.\(section.category.name)")
         }
     }
 }

@@ -13,12 +13,14 @@ public struct RecommendView: View {
         content
             .navigationTitle("おすすめ")
             .task { await model.task() }
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("recommend")
     }
 
     @ViewBuilder
     private var content: some View {
         if model.hasFailed {
-            ErrorView {
+            ErrorView(reloadIdentifier: "recommend.error.reload_button") {
                 Task { await model.reload() }
             }
         } else {

@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "7E5A5741-A96F-4B29-90B5-C02D56EE78A2",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:AozoraReaderClient.xcodeproj",
+      "identifier" : "8D2F30BE2E2DF0220003EC30",
+      "name" : "AozoraReaderClient"
+    },
+    "testInteropMode" : "complete"
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:AozoraReaderPackages",
+        "identifier" : "FeatureTests",
+        "name" : "FeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:AozoraReaderPackages",
+        "identifier" : "AozoraAPITests",
+        "name" : "AozoraAPITests"
+      }
+    }
+  ],
+  "version" : 1
+}

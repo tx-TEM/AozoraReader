@@ -7,6 +7,7 @@
 
 CSV は「作品 × 人物」の 1 行が 1 レコードなので、
 books / persons / book_persons の 3 テーブルに正規化して投入する。
+あわせて、分類番号からカテゴリーを割り出して categories / book_categories に入れる。
 
 usage:
     python3 scripts/build_db.py <input.csv> <output.sqlite3>
@@ -18,6 +19,8 @@ import sys
 from pathlib import Path
 
 SCHEMA = """
+DROP TABLE IF EXISTS book_categories;
+DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS book_persons;
 DROP TABLE IF EXISTS books;
 DROP TABLE IF EXISTS persons;
@@ -65,11 +68,40 @@ CREATE TABLE book_persons (
     PRIMARY KEY (book_id, person_id, role)
 );
 
+CREATE TABLE categories (
+    category_id TEXT PRIMARY KEY,
+    name        TEXT NOT NULL
+);
+
+CREATE TABLE book_categories (
+    book_id     INTEGER NOT NULL REFERENCES books(book_id),
+    category_id TEXT NOT NULL REFERENCES categories(category_id),
+    PRIMARY KEY (book_id, category_id)
+);
+
 CREATE INDEX idx_books_title ON books(title);
 CREATE INDEX idx_books_sort ON books(title_sort_kana);
 CREATE INDEX idx_book_persons_person ON book_persons(person_id);
 CREATE INDEX idx_persons_full_name ON persons(full_name);
+CREATE INDEX idx_book_categories_category ON book_categories(category_id);
 """
+
+# カテゴリーは NDC の類。ID は類の番号で、分類番号の無い作品は other に入れる。
+# 文字の順で数字が英字より前に来るので、ID で並べると other が最後になる。
+OTHER_CATEGORY = "other"
+CATEGORIES = [
+    ("0", "総記"),
+    ("1", "哲学"),
+    ("2", "歴史"),
+    ("3", "社会科学"),
+    ("4", "自然科学"),
+    ("5", "技術．工学"),
+    ("6", "産業"),
+    ("7", "芸術．美術"),
+    ("8", "言語"),
+    ("9", "文学"),
+    (OTHER_CATEGORY, "その他"),
+]
 
 # 青空文庫の ID は "059898" のようにゼロ埋めされた文字列。
 # URL は CSV の値をそのまま持つので、ID 自体は整数で扱う。
@@ -81,6 +113,16 @@ def to_id(value):
 def to_flag(value):
     # 著作権フラグは "あり" / "なし"
     return 1 if (value or "").strip() == "あり" else 0
+
+
+def to_category_ids(ndc):
+    """分類番号（"NDC K913 914" など）から、当てはまるカテゴリーの ID を返す。
+
+    児童書の印の K は無視する。番号が 1 つも無ければ other。
+    """
+    codes = (ndc or "").replace("NDC", "").split()
+    ids = {code.lstrip("K")[:1] for code in codes if code.lstrip("K")[:1].isdigit()}
+    return ids or {OTHER_CATEGORY}
 
 
 def main(csv_path: Path, db_path: Path) -> None:
@@ -150,6 +192,14 @@ def main(csv_path: Path, db_path: Path) -> None:
         "INSERT INTO persons VALUES (%s)" % ",".join("?" * 13), persons.values()
     )
     conn.executemany("INSERT INTO book_persons VALUES (?,?,?)", sorted(links))
+
+    book_categories = sorted(
+        (book_id, category_id)
+        for book_id, book in books.items()
+        for category_id in to_category_ids(book[8])
+    )
+    conn.executemany("INSERT INTO categories VALUES (?,?)", CATEGORIES)
+    conn.executemany("INSERT INTO book_categories VALUES (?,?)", book_categories)
     conn.commit()
     conn.execute("VACUUM")
     conn.close()
@@ -157,6 +207,7 @@ def main(csv_path: Path, db_path: Path) -> None:
     print(f"books:        {len(books)}")
     print(f"persons:      {len(persons)}")
     print(f"book_persons: {len(links)}")
+    print(f"book_categories: {len(book_categories)}")
     if skipped:
         print(f"skipped rows: {skipped}")
     print(f"wrote {db_path} ({db_path.stat().st_size / 1024 / 1024:.1f} MB)")

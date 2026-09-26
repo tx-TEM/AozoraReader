@@ -8,6 +8,7 @@ public struct RecommendationRepository: RecommendationRepositoryProtocol {
         self.api = api
     }
 
+    @concurrent
     public func recommendations() async throws -> RecommendationsResponse {
         try await GetRecommendationsRequest().response(api: api)
     }

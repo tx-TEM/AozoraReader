@@ -8,6 +8,7 @@ public struct BookRepository: BookRepositoryProtocol {
         self.api = api
     }
 
+    @concurrent
     public func books(
         title: String?,
         author: String?,
@@ -24,6 +25,7 @@ public struct BookRepository: BookRepositoryProtocol {
         ).response(api: api)
     }
 
+    @concurrent
     public func book(id: Int) async throws -> BookResponse {
         try await GetBookRequest(bookId: id).response(api: api)
     }

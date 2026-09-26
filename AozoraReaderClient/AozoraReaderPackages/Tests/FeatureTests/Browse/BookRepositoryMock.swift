@@ -26,6 +26,7 @@ final class BookRepositoryMock: BookRepositoryProtocol {
         BookResponse(id: id, title: "", copyright: false, contributors: [])
     }
 
+    @MainActor
     func books(
         title: String?,
         author: String?,

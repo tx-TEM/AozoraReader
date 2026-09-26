@@ -8,5 +8,6 @@ public protocol AozoraAPIRequest: Sendable {
     associatedtype Response: Sendable
 
     /// リクエストを送り、レスポンスをアプリの型に変えて返す。
+    @concurrent
     func response(api: AozoraAPIClient) async throws -> Response
 }

@@ -8,6 +8,7 @@ public struct GetRecommendationsRequest: AozoraAPIRequest {
 
     public init() {}
 
+    @concurrent
     public func response(api: AozoraAPIClient) async throws -> RecommendationsResponse {
         let output = try await api.client.getRecommendations()
         return RecommendationsResponse(response: try output.ok.body.json)

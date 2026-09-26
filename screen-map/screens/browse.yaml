@@ -7,7 +7,6 @@ summary: 作品の一覧を絞り込んで探す。作品名か作者かを選�
 files:
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/BrowseFeature/Sources/BrowseView.swift
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/BrowseFeature/Sources/BrowseViewModel.swift
-  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/BrowseFeature/Sources/BookRow.swift
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/BrowseFeature/Sources/FilterTarget.swift
 
 ready:

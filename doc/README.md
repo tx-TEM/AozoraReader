@@ -11,6 +11,7 @@
 | [カテゴリー](technical/category.md) | 分類番号から組み立てる作品の大きな分け方 |
 | [ジャンル](technical/genre.md) | カテゴリーの中の分け方 |
 | [サブジャンル](technical/subgenre.md) | ジャンルの中の分け方 |
+| [画面の View の書き方](technical/view.md) | 画面の View をどこまで分けるか |
 
 API の仕様は [`Sources/openapi.yaml`](../AozoraReaderMockServer/Sources/openapi.yaml) が正。
 ここには書き写さない。

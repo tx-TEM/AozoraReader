@@ -10,6 +10,7 @@
 		AA0000000000000000000004 /* BrowseFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000002 /* BrowseFeature */; };
 		AA0000000000000000000007 /* DetailFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000006 /* DetailFeature */; };
 		AA0000000000000000000009 /* ReaderFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AA0000000000000000000008 /* ReaderFeature */; };
+		AA000000000000000000000B /* RecommendFeature in Frameworks */ = {isa = PBXBuildFile; productRef = AA000000000000000000000A /* RecommendFeature */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 				AA0000000000000000000004 /* BrowseFeature in Frameworks */,
 				AA0000000000000000000007 /* DetailFeature in Frameworks */,
 				AA0000000000000000000009 /* ReaderFeature in Frameworks */,
+				AA000000000000000000000B /* RecommendFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +81,7 @@
 				AA0000000000000000000002 /* BrowseFeature */,
 				AA0000000000000000000006 /* DetailFeature */,
 				AA0000000000000000000008 /* ReaderFeature */,
+				AA000000000000000000000A /* RecommendFeature */,
 			);
 			productName = AozoraReaderClient;
 			productReference = 8D2F30BF2E2DF0220003EC30 /* AozoraReaderClient.app */;
@@ -372,6 +375,10 @@
 		AA0000000000000000000008 /* ReaderFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ReaderFeature;
+		};
+		AA000000000000000000000A /* RecommendFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RecommendFeature;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

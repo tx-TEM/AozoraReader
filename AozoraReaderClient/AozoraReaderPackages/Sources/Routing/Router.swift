@@ -8,10 +8,6 @@ public final class Router {
 
     public init() {}
 
-    public func navigate(to destination: Destination) {
-        path.append(destination)
-    }
-
     public func popToRoot() {
         path.removeAll()
     }

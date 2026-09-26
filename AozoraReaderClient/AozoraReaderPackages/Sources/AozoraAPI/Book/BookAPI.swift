@@ -24,6 +24,7 @@ public struct GetBooksRequest: AozoraAPIRequest {
         query = .init(title: title, author: author, personId: personId, limit: limit, offset: offset)
     }
 
+    @concurrent
     public func response(api: AozoraAPIClient) async throws -> BookPageResponse {
         let output = try await api.client.getBooks(query: query)
         return BookPageResponse(response: try output.ok.body.json)
@@ -42,6 +43,7 @@ public struct GetBookRequest: AozoraAPIRequest {
         self.bookId = bookId
     }
 
+    @concurrent
     public func response(api: AozoraAPIClient) async throws -> BookResponse {
         let output = try await api.client.getBook(path: .init(bookId: bookId))
         return BookResponse(response: try output.ok.body.json)

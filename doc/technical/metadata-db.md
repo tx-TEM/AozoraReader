@@ -5,7 +5,7 @@
 | 項目 | 値 |
 |---|---|
 | 生成スクリプト | [`scripts/build_db.py`](../../AozoraReaderMockServer/scripts/build_db.py) |
-| ファイル | `AozoraReaderMockServer/Sources/SQLite/aozora_database.sqlite3`（約 9.0 MB） |
+| ファイル | `AozoraReaderMockServer/Sources/SQLite/aozora_database.sqlite3` |
 | 読み出し | [`BooksStorage`](../../AozoraReaderMockServer/Sources/Database/BooksStorage.swift) — `actor`、`Connection(path, readonly: true)` |
 | 同梱 | SwiftPM の `resources: [.copy("SQLite/aozora_database.sqlite3")]` で実行ファイルのバンドルに入る |
 
@@ -17,29 +17,21 @@ unzip list_person_all_extended_utf8.zip
 python3 scripts/build_db.py list_person_all_extended_utf8.csv Sources/SQLite/aozora_database.sqlite3
 ```
 
-出力例:
-
-```
-books:        17717
-persons:      1332
-book_persons: 19375
-wrote ... (9.0 MB)
-```
-
 `build_db.py` の動作:
 
 1. 出力先が既にあれば**ファイルごと削除**してから作り直す
 2. `DROP TABLE` → `CREATE TABLE` でスキーマを張る
 3. CSV を 1 行ずつ読み、`books` / `persons` は `setdefault` で重複を除き、`book_persons` は `set` に溜める
-4. `executemany` で一括 INSERT → `VACUUM`
+4. 作品の分類番号から[カテゴリー](category.md)を割り出し、`book_categories` の行を作る
+5. `executemany` で一括 INSERT → `VACUUM`
 
-作品ID・人物IDが数値でない行はスキップされる（現在のデータでは 0 件）。
+作品ID・人物IDが数値でない行はスキップされる。
 
 > 再生成のたびに中身が全部入れ替わる。**このファイルに運用データを置くことはできない。**
 
 ## スキーマ
 
-### books（17,717 行）
+### books
 
 | 列 | 型 | 内容 |
 |---|---|---|
@@ -58,7 +50,7 @@ wrote ... (9.0 MB)
 
 全列 `NOT NULL DEFAULT ''`。値が無い場合は NULL ではなく空文字。
 
-### persons（1,332 行）
+### persons
 
 | 列 | 内容 |
 |---|---|
@@ -73,7 +65,7 @@ wrote ... (9.0 MB)
 
 `full_name` は CSV に無く、`build_db.py` が生成している非正規化列。検索で使う。
 
-### book_persons（19,375 行）
+### book_persons
 
 | 列 | 内容 |
 |---|---|
@@ -83,15 +75,30 @@ wrote ... (9.0 MB)
 
 主キーは `(book_id, person_id, role)`。同一人物が 1 作品で複数の役割を持てる。
 
-`role` の分布:
+`role` は 著者 / 翻訳者 / 校訂者 / 編者 / その他 のいずれか。
 
-| role | 件数 |
+### categories
+
+[カテゴリー](category.md)の一覧。`build_db.py` が決まった 11 行を入れる。CSV には無い。
+
+| 列 | 内容 |
 |---|---|
-| 著者 | 18,181 |
-| 翻訳者 | 1,144 |
-| 校訂者 | 28 |
-| 編者 | 16 |
-| その他 | 6 |
+| `category_id` | TEXT PK。類の番号（`0`〜`9`）か `other` |
+| `name` | カテゴリー名 |
+
+`category_id` で並べると、文字の順で `other` が最後に来る。
+
+### book_categories
+
+作品とカテゴリーの対応。`books.ndc` から `build_db.py` が割り出す。
+
+| 列 | 内容 |
+|---|---|
+| `book_id` | `books` への参照 |
+| `category_id` | `categories` への参照 |
+
+主キーは `(book_id, category_id)`。分類番号を複数持つ作品は、当てはまるカテゴリーの数だけ行を持つ。
+どの作品も 1 行以上持つ（分類番号の無い作品は `other`）。
 
 ### 索引
 
@@ -100,6 +107,7 @@ CREATE INDEX idx_books_title         ON books(title);
 CREATE INDEX idx_books_sort          ON books(title_sort_kana);
 CREATE INDEX idx_book_persons_person ON book_persons(person_id);
 CREATE INDEX idx_persons_full_name   ON persons(full_name);
+CREATE INDEX idx_book_categories_category ON book_categories(category_id);
 ```
 
 ## 値の実情
@@ -119,13 +127,13 @@ API を使う側が把握しておくべき、データの形と欠損。
 
 | 列 | 状況 |
 |---|---|
-| `ndc` | 630 行が空 |
-| `text_url` | 154 行が空 |
-| `html_url` | 93 行が空 |
-| `text_encoding` | `ShiftJIS` 17,558 / `UTF-8` 5 / 空 154 |
-| `copyright`（作品） | 0（切れている）17,236 / 1（残っている）481 |
+| `ndc` | 空の行がある |
+| `text_url` | 空の行がある |
+| `html_url` | 空の行がある |
+| `text_encoding` | ほとんどが `ShiftJIS`。`UTF-8` と空もある |
+| `copyright`（作品） | ほとんどが 0（切れている） |
 
-`text_url` / `html_url` のうち約 200 行は `www.aozora.gr.jp` 以外のホストを指している
+`text_url` / `html_url` の一部は `www.aozora.gr.jp` 以外のホストを指している
 （個人サイト、`mega.nz`、`googledrive.com` など）。本文取得を実装する段階で扱いを決める必要がある。
 
 ## 読み出し
@@ -158,18 +166,9 @@ EXISTS (SELECT 1 FROM book_persons bp JOIN persons p ON p.person_id = bp.person_
 `personId` は `book_persons` の EXISTS で絞る。人物名の文字列ではなく ID 指定。
 
 `likePattern(_:)` が `\` `%` `_` をエスケープしてから `%...%` で囲むので、
-ユーザーが `%` を入れても全件一致にはならない（実測で 0 件）。
+ユーザーが `%` を入れても全件一致にはならない。
 
 **本文は検索対象ではない。** 作品名・作品名読み・人物名のみ。
-
-実測値:
-
-| 条件 | 件数 |
-|---|---|
-| なし | 17,717 |
-| `title=走れ` | 1 |
-| `author=太宰` | 274 |
-| `title=手紙&author=堀` | 7 |
 
 ### 並び順
 
@@ -209,8 +208,8 @@ b.book_id, b.title, b.subtitle
 ```
 
 詳細（`GET /books/{bookId}`）は `bookColumns` で 12 列。一覧が実際に描いているのは
-タイトル・副題・著者名だけで、1 件あたり 528 バイトのうち使われるのが 126 バイト
-しかなかったため（[さがすタブ](../screen/browse.md#50-件ずつにした理由)）。
+タイトル・副題・著者名だけで、1 件ぶんのレスポンスの大半が使われていなかったため
+（[さがすタブ](../screen/browse.md#50-件ずつにした理由)）。
 
 `contributors` はどちらも同じように引く。
 

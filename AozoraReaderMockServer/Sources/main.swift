@@ -29,6 +29,13 @@ struct AozoraServiceAPIHandler: APIProtocol {
         ))))
     }
 
+    func getRecommendations(
+        _ input: Operations.GetRecommendations.Input
+    ) async throws -> Operations.GetRecommendations.Output {
+        let sections = try await storage.recommendations()
+        return .ok(.init(body: .json(.init(sections: sections))))
+    }
+
     func getBook(
         _ input: Operations.GetBook.Input
     ) async throws -> Operations.GetBook.Output {

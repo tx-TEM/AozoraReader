@@ -197,6 +197,52 @@ struct BrowseFilterTargetTests {
         #expect(model.books.count == BrowseViewModel.pageSize)
         #expect(repository.calls.map(\.offset) == [0, 50, 0])
     }
+
+    /// 前の条件で取りに行った次ページが、新しい条件の一覧に繋がらない。
+    @Test("次ページの取得中に対象を変えても、前の条件の結果は繋がらない")
+    func discardsNextPageOnTargetChange() async throws {
+        let repository = BookRepositoryMock()
+        repository.items = (1...120).map { .stub(id: $0, title: "\($0)") }
+        let model = BrowseViewModel(repository: repository)
+        model.keyword = "太宰"
+        model.submit()
+        try await Task.sleep(for: .milliseconds(50))
+
+        repository.delay = .milliseconds(200)
+        let nextPage = Task { await model.rowAppeared(model.books[30]) }
+        try await Task.sleep(for: .milliseconds(20))
+
+        // 新しい条件の 1 ページ目は、前の条件の次ページより先に返る。
+        repository.delay = .zero
+        repository.items = (1001...1120).map { .stub(id: $0, title: "\($0)") }
+        model.target = .author
+        await nextPage.value
+        try await Task.sleep(for: .milliseconds(50))
+
+        #expect(model.books.map(\.id) == Array(1001...1050))
+    }
+
+    @Test("次ページの取得中に対象を変えたら、新しい条件の次ページをすぐ取りに行ける")
+    func loadsNextPageOfNewTargetRightAway() async throws {
+        let repository = BookRepositoryMock()
+        repository.items = (1...120).map { .stub(id: $0, title: "\($0)") }
+        let model = BrowseViewModel(repository: repository)
+        model.keyword = "太宰"
+        model.submit()
+        try await Task.sleep(for: .milliseconds(50))
+
+        repository.delay = .milliseconds(500)
+        Task { await model.rowAppeared(model.books[30]) }
+        try await Task.sleep(for: .milliseconds(20))
+
+        repository.delay = .zero
+        model.target = .author
+        try await Task.sleep(for: .milliseconds(50))
+        await model.rowAppeared(model.books[30])
+
+        #expect(repository.calls.last == .init(title: nil, author: "太宰", offset: 50))
+        #expect(model.books.count == 100)
+    }
 }
 
 // MARK: - 取得の失敗

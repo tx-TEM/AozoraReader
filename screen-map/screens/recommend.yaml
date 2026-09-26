@@ -7,8 +7,6 @@ summary: カテゴリーごとに作品を横スクロールで並べる。作�
 files:
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/RecommendFeature/Sources/RecommendView.swift
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/RecommendFeature/Sources/RecommendViewModel.swift
-  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/RecommendFeature/Sources/RecommendationSection.swift
-  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/RecommendFeature/Sources/BookCard.swift
 
 ready:
   any: [recommend.carousel.*, recommend.error.reload_button]

@@ -7,10 +7,6 @@ summary: 作品の書誌と関係者を出し、本文を読むリンクと青�
 files:
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/DetailView.swift
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/DetailViewModel.swift
-  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/TitleSection.swift
-  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/BibliographySection.swift
-  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/ContributorRow.swift
-  - AozoraReaderClient/AozoraReaderPackages/Sources/Features/DetailFeature/Sources/LinkSection.swift
 
 ready:
   any: [detail.card_link, detail.error.reload_button]

@@ -1,3 +1,5 @@
+import AozoraAPIResponse
+import Routing
 import SwiftUI
 import UIComponents
 
@@ -26,13 +28,40 @@ public struct BrowseView: View {
             }
         } else {
             List(model.books) { book in
-                BookRow(book: book)
-                    .accessibilityIdentifier("browse.book_row.\(book.title)")
-                    .task { await model.rowAppeared(book) }
+                NavigationLink(value: Destination.book(id: book.id)) {
+                    row(of: book)
+                }
+                .accessibilityIdentifier("browse.book_row.\(book.title)")
+                .task { await model.rowAppeared(book) }
             }
         }
     }
+}
 
+// MARK: - 作品の行
+
+extension BrowseView {
+    /// 作品リストの 1 件。副題を持たない作品では、副題を行から省く。
+    private func row(of book: BookSummaryResponse) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(book.title)
+
+            if let subtitle = book.subtitle {
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Text(book.contributors.map(\.name).joined(separator: "、"))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+// MARK: - 絞り込み
+
+extension BrowseView {
     private var filter: some View {
         VStack(spacing: 0) {
             SearchBar(

@@ -26,6 +26,8 @@ elements:
       - text:
         summary: 入力が 300ms 止まるか変換が確定すると絞り込みを送り、一覧が入れ替わる
         expect: {value: self}
+        leaves: 入力欄の語と絞り込みの結果が残る
+        reset: tap:Clear text
 
   - id: Search
     name: キーボードの検索キー（OS）
@@ -54,6 +56,8 @@ elements:
       - tap:
         summary: 作者で絞り込むように切り替え、その場で送り直す。プレースホルダが「作者で絞り込む」に変わる
         expect: {selected: self}
+        leaves: 絞り込みの対象が作者のまま残る
+        reset: tap:browse.target_picker.title
 
   - id: browse.error.reload_button
     name: 再読み込み（画面中央）
@@ -68,7 +72,7 @@ elements:
     by: label
     actions:
       - tap:
-        summary: おすすめタブに切り替える
+        summary: おすすめタブに切り替える。起動して初めて開いたときと、前回取れなかったときだけおすすめを取りに行く
         expect: {screen: recommend, via: tab}
 
 gestures:

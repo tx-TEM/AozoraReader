@@ -2,7 +2,7 @@ anchor: recommend
 
 names: [おすすめ, おすすめタブ, おすすめ画面]
 
-summary: カテゴリーごとに作品を横スクロールで並べる。作品を押すと詳細へ行き、末尾に「もっと見る」がある
+summary: カテゴリーごとに作品を横スクロールで並べる。サーバーが返した順のまま出す。作品を押すと詳細へ行き、末尾に「もっと見る」がある
 
 files:
   - AozoraReaderClient/AozoraReaderPackages/Sources/Features/RecommendFeature/Sources/RecommendView.swift
@@ -17,7 +17,7 @@ elements:
     scroll: horizontal
     children:
       - id: recommend.book.*
-        name: 作品の表紙（ID は作品名）
+        name: 作品のカード（表紙に作品名、下に著者名。ID は作品名）
         actions:
           - tap:
             summary: 作品の詳細を開く
